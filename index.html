@@ -9,624 +9,575 @@
 /* ═══ RESET & VARS ═══ */
 :root {
   --yellow: #FFE000;
-  --purple: #1a0a3e;
-  --purple-mid: #2d0f6b;
-  --purple-light: #3d1a8a;
   --sidebar-w: 72px;
-  --white: #fff;
   --muted: rgba(255,255,255,0.5);
-  --dim: rgba(255,255,255,0.25);
+  --dim: rgba(255,255,255,0.28);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html,body { width:100%; height:100%; overflow:hidden; background:#150730; color:#fff;
-  font-family:'Outfit',sans-serif; user-select:none; }
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  background:#080810; color:#fff;
+  font-family:'Outfit',sans-serif; user-select:none;
+}
 
-/* ═══ GALAXY BASE ═══ */
+/* ═══ STATIC BG — very dark, purple bloom top-left only ═══ */
 .bg-base {
   position:fixed; inset:0; z-index:0;
-  background: radial-gradient(ellipse 70% 55% at 35% 45%, #4a1fa8 0%, #2a0d60 40%, #130528 100%);
+  background:
+    radial-gradient(ellipse 55% 60% at -5% 0%, rgba(100,30,200,0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 45% at 15% 25%, rgba(80,20,160,0.35) 0%, transparent 55%),
+    #080810;
 }
 
-/* ═══ MUSIC STAFF ANIMATION (Page 1 bg) ═══ */
-.music-anim-layer {
-  position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden;
+/* ═══ MUSIC LINES — top-left quadrant only ═══ */
+.music-bg {
+  position:fixed; top:0; left:var(--sidebar-w); width:45%; height:52%;
+  z-index:1; pointer-events:none; overflow:hidden; opacity:1;
+  transition: opacity 0.4s;
 }
-.staff-lines {
-  position:absolute; top:0; left:0; width:100%; height:55%;
-  opacity:0.18;
-}
-.staff-line {
+.music-bg.hide { opacity:0; }
+.mstaff {
   position:absolute; height:1.5px; border-radius:1px;
-  background:linear-gradient(90deg, transparent, #c084fc, #e879f9, #818cf8, transparent);
-  left:-10%; width:85%;
+  background:linear-gradient(90deg, rgba(160,80,255,0.8), rgba(200,80,220,0.6), rgba(120,80,255,0.4), transparent);
   transform-origin:left center;
 }
-.staff-line:nth-child(1) { top:22%; transform:rotate(-8deg); animation:staffFlow 8s ease-in-out infinite; opacity:0.9; }
-.staff-line:nth-child(2) { top:30%; transform:rotate(-6deg); animation:staffFlow 8s ease-in-out infinite 0.4s; }
-.staff-line:nth-child(3) { top:38%; transform:rotate(-5deg); animation:staffFlow 8s ease-in-out infinite 0.8s; }
-.staff-line:nth-child(4) { top:46%; transform:rotate(-4deg); animation:staffFlow 8s ease-in-out infinite 1.2s; }
-.staff-line:nth-child(5) { top:54%; transform:rotate(-3deg); animation:staffFlow 8s ease-in-out infinite 1.6s; }
-@keyframes staffFlow {
-  0%,100% { transform:rotate(var(--r,-6deg)) scaleX(1) translateX(0); opacity:0.7; }
-  50%      { transform:rotate(var(--r,-6deg)) scaleX(1.08) translateX(2%); opacity:1; }
+.mstaff:nth-child(1){ top:28%; left:0; width:90%; transform:rotate(-9deg); animation:staffPulse 7s ease-in-out infinite; }
+.mstaff:nth-child(2){ top:36%; left:0; width:80%; transform:rotate(-7deg); animation:staffPulse 7s ease-in-out infinite 0.5s; }
+.mstaff:nth-child(3){ top:44%; left:0; width:75%; transform:rotate(-6deg); animation:staffPulse 7s ease-in-out infinite 1s; }
+.mstaff:nth-child(4){ top:52%; left:0; width:70%; transform:rotate(-5deg); animation:staffPulse 7s ease-in-out infinite 1.5s; }
+.mstaff:nth-child(5){ top:60%; left:0; width:65%; transform:rotate(-4deg); animation:staffPulse 7s ease-in-out infinite 2s; }
+@keyframes staffPulse {
+  0%,100%{ opacity:0.55; transform:rotate(var(--rt,-6deg)) scaleX(1); }
+  50%    { opacity:0.85; transform:rotate(var(--rt,-6deg)) scaleX(1.06); }
 }
 
 /* Treble clef */
-.treble-clef {
-  position:absolute; left:140px; top:5%; font-size:9rem;
+.treble {
+  position:absolute; top:2%; left:10%; font-size:8rem;
   color:transparent;
-  background:linear-gradient(160deg, #c084fc, #f472b6, #818cf8);
+  background:linear-gradient(160deg,#a855f7,#ec4899,#818cf8);
   -webkit-background-clip:text; background-clip:text;
-  opacity:0.22; z-index:2; pointer-events:none;
-  animation:clefFloat 7s ease-in-out infinite;
-  filter:drop-shadow(0 0 20px rgba(192,132,252,0.4));
+  opacity:0.2; animation:trebleF 8s ease-in-out infinite;
+  filter:drop-shadow(0 0 16px rgba(168,85,247,0.3));
 }
-@keyframes clefFloat {
-  0%,100% { transform:translateY(0) rotate(-3deg); opacity:0.22; }
-  50%      { transform:translateY(-12px) rotate(2deg); opacity:0.3; }
-}
+@keyframes trebleF{ 0%,100%{ transform:translateY(0) rotate(-2deg); } 50%{ transform:translateY(-10px) rotate(2deg); } }
 
-/* Floating music notes */
-.bg-note {
-  position:absolute; z-index:2; pointer-events:none;
-  font-size:var(--sz,2rem); color:var(--c,#c084fc);
-  filter:drop-shadow(0 0 8px var(--c,#c084fc));
-  opacity:var(--op,0.35);
-  animation:noteFloat var(--dur,4s) ease-in-out infinite var(--delay,0s);
+/* Floating notes */
+.fnote {
+  position:absolute; color:var(--c,#c084fc);
+  font-size:var(--fs,1.4rem); opacity:var(--op,0.4);
+  filter:drop-shadow(0 0 6px var(--c,#c084fc));
+  animation:noteF var(--d,4s) ease-in-out infinite var(--dl,0s);
 }
-@keyframes noteFloat {
-  0%,100% { transform:translate(0,0) rotate(var(--ra,-10deg)); }
-  50%      { transform:translate(var(--mx,8px),var(--my,-18px)) rotate(var(--rb,8deg)); }
+@keyframes noteF{
+  0%,100%{ transform:translate(0,0) rotate(var(--ra,-10deg)); }
+  50%    { transform:translate(var(--tx,8px),var(--ty,-16px)) rotate(var(--rb,8deg)); }
 }
 
 /* Stars */
-.star { position:fixed; background:#fff; border-radius:50%;
-  animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s); }
-@keyframes twinkle {
-  0%,100% { opacity:var(--lo,0.15); } 50% { opacity:var(--hi,0.7); }
-}
+.star{ position:fixed; background:#fff; border-radius:50%; animation:tw var(--d,3s) ease-in-out infinite var(--dl,0s); }
+@keyframes tw{ 0%,100%{ opacity:var(--lo,.12); } 50%{ opacity:var(--hi,.6); } }
 
-/* ═══ APP SHELL ═══ */
-.app { position:relative; z-index:10; display:flex; width:100%; height:100vh; }
+/* ═══ LAYOUT ═══ */
+.app{ position:relative; z-index:10; display:flex; width:100%; height:100vh; }
 
 /* ═══ SIDEBAR ═══ */
-.sidebar {
+.sidebar{
   flex:0 0 var(--sidebar-w); height:100vh;
-  background:rgba(12,5,32,0.82); backdrop-filter:blur(14px);
-  border-right:1px solid rgba(255,255,255,0.06);
+  background:rgba(6,3,18,0.88); backdrop-filter:blur(14px);
+  border-right:1px solid rgba(255,255,255,0.05);
   display:flex; flex-direction:column; align-items:center;
-  padding:16px 0 20px; gap:4px; z-index:50;
+  padding:16px 0 20px; gap:3px; z-index:50;
 }
-.sb-avatar {
+.sb-avatar{
   width:42px; height:42px; border-radius:50%;
   background:linear-gradient(135deg,#7c3aed,#a78bfa);
   display:flex; align-items:center; justify-content:center;
-  font-weight:700; font-size:1rem; border:2px solid rgba(255,255,255,0.25);
-  cursor:pointer; margin-bottom:16px;
-  transition:transform 0.2s;
+  font-weight:700; font-size:1rem; border:2px solid rgba(255,255,255,0.22);
+  cursor:pointer; margin-bottom:16px; transition:transform .2s;
 }
-.sb-avatar:hover { transform:scale(1.08); }
-.sb-nav { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; }
-.si {
+.sb-avatar:hover{ transform:scale(1.08); }
+.sb-nav{ display:flex; flex-direction:column; align-items:center; gap:2px; flex:1; }
+.si{
   width:50px; height:46px; border-radius:10px;
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; color:rgba(255,255,255,0.4);
-  transition:all 0.18s; position:relative;
+  cursor:pointer; color:rgba(255,255,255,0.38); transition:all .18s; position:relative;
 }
-.si:hover { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.8); }
-.si.active { background:rgba(255,224,0,0.1); color:var(--yellow); }
-.si.active::before {
+.si:hover{ background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.8); }
+.si.active{ background:rgba(255,224,0,0.1); color:var(--yellow); }
+.si.active::before{
   content:''; position:absolute; left:-1px; top:50%; transform:translateY(-50%);
   width:3px; height:26px; background:var(--yellow); border-radius:0 3px 3px 0;
 }
-.si svg { width:21px; height:21px; }
-.sb-bottom { margin-top:auto; }
+.si svg{ width:21px; height:21px; }
+.sb-bot{ margin-top:auto; }
 
 /* ═══ MAIN ═══ */
-.main { flex:1; height:100vh; overflow:hidden; position:relative; }
-.screen { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity 0.3s; overflow:hidden; }
-.screen.active { opacity:1; pointer-events:all; }
+.main{ flex:1; height:100vh; overflow:hidden; position:relative; }
+.screen{ position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .3s; overflow:hidden; }
+.screen.active{ opacity:1; pointer-events:all; }
 
-/* ════════════════════════════════════════
-   SCREEN 1 — HOME
-════════════════════════════════════════ */
-#home { overflow-y:auto; scrollbar-width:none; }
-#home::-webkit-scrollbar { display:none; }
+/* ════════════════════════════════════
+   HOME — SCREEN 1
+════════════════════════════════════ */
+#home{ overflow-y:auto; scrollbar-width:none; }
+#home::-webkit-scrollbar{ display:none; }
 
-/* Tubi logo */
-.tubi-corner {
+/* tubi top-right */
+.tubi-tr{
   position:absolute; top:18px; right:22px; z-index:30;
-  font-family:'Fredoka One',cursive; font-size:1.8rem;
-  color:var(--yellow); letter-spacing:-1px;
-  text-shadow:0 0 18px rgba(255,224,0,0.35);
+  font-family:'Fredoka One',cursive; font-size:1.8rem; color:var(--yellow);
+  letter-spacing:-1px; text-shadow:0 0 18px rgba(255,224,0,.3);
 }
 
 /* Hero row */
-.hero-row {
+.hero-row{
   display:flex; min-height:460px;
   padding:32px 24px 0; gap:20px; position:relative;
 }
 
-/* LEFT: tubioke logo + CTA */
-.hero-brand {
+/* LEFT brand */
+.hero-brand{
   flex:0 0 auto; width:360px;
   display:flex; flex-direction:column; justify-content:center;
   padding-bottom:20px; position:relative;
 }
-.logo-wrap { position:relative; display:inline-block; margin-bottom:20px; }
-.logo-text {
+.logo-wrap{ position:relative; display:inline-block; margin-bottom:22px; }
+.logo-text{
   font-family:'Fredoka One',cursive;
   font-size:clamp(3.2rem,5.5vw,5.8rem);
-  color:var(--yellow); line-height:1;
-  letter-spacing:-1px;
-  text-shadow:2px 3px 0 rgba(140,80,0,0.45), 0 0 40px rgba(255,224,0,0.25);
+  color:var(--yellow); line-height:1; letter-spacing:-1px;
+  text-shadow:2px 3px 0 rgba(120,60,0,.5), 0 0 40px rgba(255,224,0,.2);
   display:flex; align-items:center;
 }
-.logo-mic {
-  font-size:0.85em; display:inline-block;
-  filter:drop-shadow(0 0 10px rgba(255,224,0,0.5));
-  animation:micWobble 2.8s ease-in-out infinite;
-}
-@keyframes micWobble {
-  0%,100% { transform:rotate(-8deg) scale(1); }
-  50%      { transform:rotate(6deg) scale(1.1); }
-}
-.logo-note {
-  position:absolute; color:var(--yellow); font-size:var(--ns,1.3rem);
-  opacity:0.75; animation:logoNoteFloat var(--nd,3s) ease-in-out infinite var(--ndelay,0s);
-  filter:drop-shadow(0 0 6px rgba(255,224,0,0.5));
-}
-@keyframes logoNoteFloat {
-  0%,100% { transform:translate(0,0) rotate(var(--nra,-12deg)); }
-  50%      { transform:translate(var(--nnx,5px),var(--nny,-12px)) rotate(var(--nrb,8deg)); }
-}
-.n1 { top:-22px; right:-28px; --ns:1.3rem; --nd:2.8s; --ndelay:0s; --nra:-15deg; --nrb:5deg; --nnx:4px; --nny:-14px; }
-.n2 { top:5px; right:-64px; --ns:0.95rem; --nd:3.6s; --ndelay:0.6s; --nra:5deg; --nrb:-12deg; --nnx:-4px; --nny:-10px; }
-.n3 { top:-34px; right:-78px; --ns:0.8rem; --nd:4.2s; --ndelay:1.2s; --nra:-5deg; --nrb:15deg; --nnx:6px; --nny:-8px; }
-.n4 { bottom:4px; right:-44px; --ns:1.1rem; --nd:3.2s; --ndelay:0.4s; --nra:10deg; --nrb:-5deg; --nnx:-3px; --nny:-12px; }
-.n5 { top:-10px; right:-110px; --ns:0.75rem; --nd:5s; --ndelay:1.8s; --nra:-8deg; --nrb:10deg; --nnx:5px; --nny:-10px; }
+.logo-mic{ font-size:.85em; display:inline-block; filter:drop-shadow(0 0 10px rgba(255,224,0,.5)); animation:micW 2.8s ease-in-out infinite; }
+@keyframes micW{ 0%,100%{transform:rotate(-8deg) scale(1);} 50%{transform:rotate(6deg) scale(1.1);} }
 
-.view-all-btn {
+.ln{ position:absolute; color:var(--yellow); font-size:var(--ns,1.3rem); opacity:.75;
+  animation:lnF var(--nd,3s) ease-in-out infinite var(--nl,0s);
+  filter:drop-shadow(0 0 5px rgba(255,224,0,.5)); }
+@keyframes lnF{ 0%,100%{transform:translate(0,0) rotate(var(--ra,-12deg));}
+  50%{transform:translate(var(--tx,5px),var(--ty,-12px)) rotate(var(--rb,8deg));} }
+.ln1{top:-20px;right:-26px;--ns:1.3rem;--nd:2.8s;--nl:0s;--ra:-15deg;--rb:5deg;--tx:4px;--ty:-14px;}
+.ln2{top:6px;right:-62px;--ns:.95rem;--nd:3.6s;--nl:.6s;--ra:5deg;--rb:-12deg;--tx:-4px;--ty:-10px;}
+.ln3{top:-32px;right:-76px;--ns:.8rem;--nd:4.2s;--nl:1.2s;--ra:-5deg;--rb:15deg;--tx:6px;--ty:-8px;}
+.ln4{bottom:6px;right:-42px;--ns:1.1rem;--nd:3.2s;--nl:.4s;--ra:10deg;--rb:-5deg;--tx:-3px;--ty:-12px;}
+.ln5{top:-8px;right:-108px;--ns:.75rem;--nd:5s;--nl:1.8s;--ra:-8deg;--rb:10deg;--tx:5px;--ty:-10px;}
+
+.view-playlists-btn{
   display:inline-flex; align-items:center;
   background:var(--yellow); color:#1a0800;
-  font-family:'Outfit',sans-serif; font-weight:800;
-  font-size:1rem; padding:13px 32px;
-  border-radius:100px; border:none; cursor:pointer;
-  width:fit-content; letter-spacing:0.1px;
-  box-shadow:0 4px 22px rgba(255,224,0,0.3);
-  transition:all 0.2s;
+  font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem;
+  padding:13px 32px; border-radius:100px; border:none; cursor:pointer;
+  width:fit-content; box-shadow:0 4px 22px rgba(255,224,0,.28); transition:all .2s;
 }
-.view-all-btn:hover { background:#fff5a0; transform:scale(1.04); box-shadow:0 6px 30px rgba(255,224,0,0.45); }
+.view-playlists-btn:hover{ background:#fff5a0; transform:scale(1.04); box-shadow:0 6px 30px rgba(255,224,0,.45); }
 
-/* RIGHT: 3 featured category cards */
-.hero-cards {
+/* RIGHT: 3 featured playlist cards */
+.hero-cards{
   flex:1; display:flex; align-items:flex-start;
   gap:12px; padding-top:10px; overflow:hidden;
 }
-.feat-card {
+
+/* Base card */
+.feat-card{
   flex:1; min-width:0; border-radius:14px; overflow:hidden;
-  cursor:pointer; transition:all 0.25s; position:relative;
-  height:340px;
-  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer; transition:all .25s; position:relative;
+  height:336px; border:1px solid rgba(255,255,255,0.08);
 }
-.feat-card:nth-child(2) { /* center/featured card, slightly taller */
-  height:360px; margin-top:-10px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.4);
+.feat-card:nth-child(2){
+  height:356px; margin-top:-10px;
+  box-shadow:0 0 0 2px var(--yellow), 0 8px 40px rgba(255,224,0,.18);
 }
-.feat-card:hover { transform:scale(1.03) translateY(-4px); }
-.feat-card:hover .fc-overlay { opacity:1; }
-.fc-overlay {
-  position:absolute; inset:0;
-  background:rgba(255,224,0,0.08);
-  border:2px solid var(--yellow);
-  border-radius:14px; opacity:0; transition:opacity 0.2s;
+.feat-card:hover{ transform:scale(1.03) translateY(-4px); }
+.feat-card:hover .fc-hover{ opacity:1; }
+.fc-hover{
+  position:absolute; inset:0; border:2px solid var(--yellow);
+  border-radius:14px; opacity:0; transition:opacity .2s; pointer-events:none;
 }
 
-/* Holiday Hits card */
-.fc-holiday {
-  background:linear-gradient(160deg, #0d1b3e 0%, #1a2a5a 40%, #0a1228 100%);
+/* HOLIDAY HITS card — dark pine tree / ornament look */
+.fc-holiday{
+  background:linear-gradient(165deg,#0d1c0d 0%,#1a3020 40%,#0a1408 70%,#050c04 100%);
 }
-.fc-holiday-inner {
-  width:100%; height:100%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:14px; padding:20px;
+.fc-holiday::before{
+  content:'';position:absolute;inset:0;
   background:
-    radial-gradient(ellipse 80% 40% at 50% 90%, rgba(220,170,30,0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 60% at 30% 20%, rgba(100,120,255,0.15) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 50% 110%, rgba(180,140,40,.28) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 60% at 20% 20%, rgba(60,120,60,.2) 0%,transparent 60%);
 }
-.fc-holiday-icon { font-size:3.2rem; filter:drop-shadow(0 0 16px rgba(220,180,30,0.6)); }
-.fc-holiday-text {
-  font-family:'Outfit',sans-serif; font-weight:800; font-size:1.5rem;
-  color:#fff; text-align:center; line-height:1.1; letter-spacing:1px;
-  text-shadow:0 0 20px rgba(220,170,30,0.5);
+.fc-holiday-content{
+  position:relative; z-index:2; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  padding:0 16px 32px;
 }
-.fc-holiday-glow {
-  position:absolute; bottom:0; left:0; right:0; height:60%;
-  background:linear-gradient(to top, rgba(200,150,20,0.15), transparent);
-  pointer-events:none;
+/* Pine branch texture via CSS */
+.pine-layer{
+  position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none;
 }
-.fc-sparkles { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-.sparkle {
-  position:absolute; width:3px; height:3px; border-radius:50%;
-  background:#ffe566; animation:sparkleAnim var(--sd,3s) ease-in-out infinite var(--sdl,0s);
+.pine-emoji{
+  position:absolute; font-size:var(--pfs,4rem); opacity:var(--pop,.25);
+  filter:saturate(0.4) brightness(0.6);
+  animation:pineSway var(--pd,8s) ease-in-out infinite var(--pdl,0s);
 }
-@keyframes sparkleAnim {
-  0%,100% { opacity:0; transform:scale(0); }
-  50%      { opacity:1; transform:scale(1); }
+@keyframes pineSway{ 0%,100%{transform:rotate(var(--pra,-3deg)) scale(1);}50%{transform:rotate(var(--prb,3deg)) scale(1.02);} }
+.orn{
+  position:absolute; font-size:var(--ofs,1.8rem); opacity:var(--oop,.7);
+  filter:drop-shadow(0 2px 8px rgba(220,160,20,.6));
+  animation:ornSwing var(--od,4s) ease-in-out infinite var(--odl,0s);
 }
-
-/* Love Songs card */
-.fc-love {
-  background:linear-gradient(145deg, #c2185b 0%, #e91e63 30%, #f06292 60%, #ff8a80 100%);
-}
-.fc-love-inner {
-  width:100%; height:100%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:10px; padding:20px; position:relative; overflow:hidden;
-}
-.fc-love-hearts { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-.love-heart {
-  position:absolute; font-size:var(--hs,1.5rem);
-  animation:heartFloat var(--hd,5s) ease-in-out infinite var(--hdl,0s);
-  opacity:0.6;
-}
-@keyframes heartFloat {
-  0%,100% { transform:translateY(0) rotate(var(--hr,-5deg)) scale(1); opacity:0.6; }
-  50%      { transform:translateY(var(--hy,-20px)) rotate(var(--hr2,5deg)) scale(1.1); opacity:0.9; }
-}
-.fc-love-title {
-  font-family:'Dancing Script',cursive;
-  font-size:3.2rem; font-weight:700; color:#5b0a2a;
-  line-height:1; text-shadow:2px 2px 0 rgba(255,255,255,0.2);
-  position:relative; z-index:2;
-}
-.fc-love-sub {
-  font-family:'Fredoka One',cursive;
-  font-size:1.8rem; color:#7b1fa2;
-  letter-spacing:1px; position:relative; z-index:2;
+@keyframes ornSwing{ 0%,100%{transform:rotate(var(--ora,-8deg));}50%{transform:rotate(var(--orb,8deg));} }
+.fc-holiday-icon{ font-size:2.4rem; margin-bottom:10px; filter:drop-shadow(0 0 12px rgba(220,180,20,.6)); }
+.fc-holiday-label{
+  font-family:'Outfit',sans-serif; font-weight:900; font-size:1.65rem;
+  color:#fff; text-align:center; line-height:1; letter-spacing:2px;
+  text-shadow:0 0 24px rgba(220,170,20,.6), 1px 1px 0 rgba(0,0,0,.8);
 }
 
-/* Summer Jams card */
-.fc-summer {
-  background:linear-gradient(160deg, #1a0030 0%, #2d0058 40%, #1a0030 100%);
+/* LOVE TUBI card */
+.fc-love{
+  background:linear-gradient(145deg,#d63370 0%,#e91e63 30%,#f06292 60%,#f48fb1 100%);
 }
-.fc-summer-inner {
-  width:100%; height:100%;
+.fc-love-content{
+  position:relative; z-index:2; width:100%; height:100%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:14px; padding:20px;
+  gap:8px; overflow:hidden;
+}
+.fc-love-hearts-layer{
+  position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;
+}
+.lhrt{
+  position:absolute; font-size:var(--lhfs,1.4rem); opacity:var(--lhop,.65);
+  animation:lhF var(--lhd,5s) ease-in-out infinite var(--lhdl,0s);
+}
+@keyframes lhF{ 0%,100%{transform:translateY(0) rotate(var(--lhr,-5deg)) scale(1); opacity:var(--lhop,.65);}
+  50%{transform:translateY(var(--lhy,-18px)) rotate(var(--lhr2,5deg)) scale(1.1); opacity:0.9;} }
+.fc-love-title{
+  font-family:'Dancing Script',cursive; font-weight:700; font-size:3.4rem;
+  color:#5b0a2a; line-height:1; position:relative; z-index:2;
+  text-shadow:1px 2px 0 rgba(255,255,255,.2);
+}
+.fc-love-sub{
+  font-family:'Fredoka One',cursive; font-size:1.9rem; color:#7b1fa2;
+  position:relative; z-index:2; letter-spacing:.5px;
+}
+
+/* TERROR card (spooky / partial) */
+.fc-terror{
+  background:linear-gradient(165deg,#0a0a0a 0%,#1a0a08 40%,#2a1008 70%,#100808 100%);
+}
+.fc-terror::before{
+  content:'';position:absolute;inset:0;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(255,80,0,0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 70% 30%, rgba(255,140,0,0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(200,60,0,.2) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,80,0,.1) 0%,transparent 50%);
 }
-.fc-summer-moon { font-size:4rem; filter:drop-shadow(0 0 20px rgba(255,100,0,0.6)); }
-.fc-summer-text {
-  font-family:'Outfit',sans-serif; font-weight:800;
-  font-size:1.4rem; color:#ff8c40; text-align:center;
-  line-height:1.1; letter-spacing:0.5px;
-  text-shadow:0 0 20px rgba(255,120,0,0.5);
+.fc-terror-content{
+  position:relative; z-index:2; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end;
+  padding:20px 18px;
 }
-.fc-summer-sub { font-family:'Fredoka One',cursive; font-size:1.3rem; color:rgba(180,80,255,0.9); }
+.terror-moon{ position:absolute; top:12%; right:10%; font-size:3.5rem; opacity:.35; filter:drop-shadow(0 0 12px rgba(255,100,0,.5)); animation:moonGlow 4s ease-in-out infinite; }
+@keyframes moonGlow{ 0%,100%{filter:drop-shadow(0 0 12px rgba(255,100,0,.5));}50%{filter:drop-shadow(0 0 22px rgba(255,100,0,.8));} }
+.terror-trees{ position:absolute; bottom:0; left:0; right:0; font-size:4rem; text-align:center; opacity:.2; filter:grayscale(1) brightness(.4); }
+.fc-terror-text{
+  font-family:'Fredoka One',cursive; font-size:2.4rem; color:#ff4400;
+  line-height:1; letter-spacing:.5px; position:relative; z-index:2;
+  text-shadow:0 0 20px rgba(255,60,0,.7);
+}
+.fc-terror-sub{ font-family:'Fredoka One',cursive; font-size:1.4rem; color:rgba(160,40,220,.9); position:relative; z-index:2; }
+.terror-pumpkin{ font-size:2.5rem; margin-bottom:8px; position:relative; z-index:2; filter:drop-shadow(0 0 10px rgba(255,100,0,.6)); animation:micW 3s ease-in-out infinite; }
 
-/* ─── RECOMMENDED ─── */
-.recommended-section { padding:28px 24px 32px; }
-.rec-label {
-  font-size:1.25rem; font-weight:700; color:#fff;
-  margin-bottom:18px;
-}
-.album-row {
-  display:flex; gap:12px; overflow-x:auto;
-  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.15) transparent;
+/* ─── TRENDING TUNES ─── */
+.trending-section{ padding:28px 24px 40px; }
+.trending-label{ font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:18px; }
+
+.posters-row{
+  display:flex; gap:10px; overflow-x:auto;
+  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.12) transparent;
   padding-bottom:8px;
 }
-.album-row::-webkit-scrollbar { height:3px; }
-.album-row::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
+.posters-row::-webkit-scrollbar{ height:3px; }
+.posters-row::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.12); border-radius:2px; }
 
-.album-card {
-  flex:0 0 162px; height:220px; border-radius:8px; overflow:hidden;
-  cursor:pointer; position:relative; transition:all 0.22s;
-  border:1px solid rgba(255,255,255,0.06);
+/* Poster card — tall portrait like real show art */
+.poster-card{
+  flex:0 0 160px; height:222px; border-radius:8px; overflow:hidden;
+  cursor:pointer; position:relative; transition:all .22s;
+  border:1px solid rgba(255,255,255,.06);
 }
-.album-card:hover { transform:scale(1.05) translateY(-4px); border-color:var(--yellow); box-shadow:0 8px 28px rgba(255,224,0,0.15); }
-.album-card:hover .ac-play { opacity:1; }
-.ac-bg { position:absolute; inset:0; }
-.ac-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%, transparent 100%); }
-.ac-play {
+.poster-card:hover{ transform:scale(1.05) translateY(-4px); border-color:var(--yellow); box-shadow:0 8px 28px rgba(255,224,0,.15); }
+.poster-card:hover .pc-play{ opacity:1; }
+.pc-bg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.pc-art{ width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.pc-photo{ position:absolute; inset:0; font-size:6rem; display:flex; align-items:center; justify-content:center; opacity:.5; filter:blur(1px); }
+.pc-overlay{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.3) 50%, transparent 100%); }
+.pc-play{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.2s;
+  background:rgba(0,0,0,.45); opacity:0; transition:opacity .2s; z-index:10;
 }
-.ac-play-btn {
+.pc-play-btn{
   width:44px; height:44px; border-radius:50%;
   background:var(--yellow); display:flex; align-items:center; justify-content:center;
 }
-.ac-play-btn svg { width:18px; height:18px; fill:#1a0800; margin-left:3px; }
-.ac-info { position:absolute; bottom:0; left:0; right:0; padding:12px 10px 10px; }
-.ac-title { font-size:0.75rem; font-weight:700; color:#fff; line-height:1.2; margin-bottom:2px; }
-.ac-artist { font-size:0.65rem; color:rgba(255,255,255,0.55); }
-.ac-emoji { position:absolute; top:50%; left:50%; transform:translate(-50%,-65%); font-size:3.5rem; }
+.pc-play-btn svg{ width:18px; height:18px; fill:#1a0800; margin-left:3px; }
+.pc-info{ position:absolute; bottom:0; left:0; right:0; padding:10px 10px 8px; z-index:5; }
+.pc-title{ font-size:.75rem; font-weight:700; color:#fff; line-height:1.2; margin-bottom:2px; }
+.pc-sub{ font-size:.65rem; color:rgba(255,255,255,.55); margin-bottom:4px; }
+/* tubi original tag */
+.tubi-tag{
+  display:inline-flex; align-items:center; gap:3px;
+  font-family:'Fredoka One',cursive; font-size:.62rem; color:var(--yellow);
+  letter-spacing:.3px;
+}
+.tubi-tag-dot{ width:5px; height:5px; border-radius:50%; background:var(--yellow); }
 
-/* ════════════════════════════════════════
-   SCREEN 2 — BROWSER (EPG)
-════════════════════════════════════════ */
-#browser { display:flex; flex-direction:column; }
+/* ════════════════════════════════════
+   BROWSER — SCREEN 2
+════════════════════════════════════ */
+#browser{ display:flex; flex-direction:column; }
 
-/* Top preview — full width */
-.preview-strip {
-  flex:0 0 auto; position:relative; overflow:hidden;
-  min-height:290px; display:flex; align-items:stretch;
-  border-bottom:1px solid rgba(255,255,255,0.06);
+/* Back/Genre bar */
+.bbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 22px;
+  background:rgba(6,3,18,.75); backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.05); flex-shrink:0;
+}
+.bbar-back{
+  display:flex; align-items:center; gap:7px;
+  background:none; border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.7); cursor:pointer; padding:6px 14px;
+  border-radius:6px; font-family:'Outfit',sans-serif; font-size:.78rem; transition:all .2s;
+}
+.bbar-back:hover{ border-color:var(--yellow); color:var(--yellow); }
+.bbar-back svg{ width:13px; height:13px; fill:currentColor; }
+.bbar-genre{ font-family:'Fredoka One',cursive; font-size:1.3rem; color:var(--yellow); }
+
+/* Preview strip — immersive full-width */
+.preview-strip{
+  flex:0 0 auto; position:relative; overflow:hidden; min-height:285px;
+  display:flex; align-items:stretch;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
 
-/* Blurred artist photo right side */
-.preview-photo-bg {
-  position:absolute; inset:0; z-index:0;
+/* Right: artist/show photo as background */
+.preview-photo-panel{
+  position:absolute; right:0; top:0; bottom:0; width:58%;
+  overflow:hidden;
 }
-.preview-photo-right {
-  position:absolute; right:0; top:0; bottom:0; width:55%;
-  background:var(--photo-grad, linear-gradient(135deg, #8B0000, #C2185B));
+.preview-photo-bg-color{
+  position:absolute; inset:0;
+  background:var(--pbg, linear-gradient(135deg,#2a1060,#1a0840));
   display:flex; align-items:center; justify-content:center;
-  font-size:9rem; overflow:hidden;
+  font-size:9rem;
 }
-.preview-photo-right::before {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(90deg, #150730 0%, rgba(21,7,48,0.4) 30%, transparent 70%);
-  z-index:2;
+.preview-photo-emoji{ position:relative; z-index:1; opacity:.5; animation:photoFloat 8s ease-in-out infinite; }
+@keyframes photoFloat{ 0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.03) translateY(-8px);} }
+/* Gradient fade left over photo */
+.preview-photo-fade{
+  position:absolute; inset:0; z-index:2;
+  background:linear-gradient(90deg, #0d0620 0%, rgba(13,6,32,.75) 28%, rgba(13,6,32,.25) 55%, transparent 80%);
 }
-.preview-photo-artist-emoji {
-  font-size:9rem; opacity:0.4; position:relative; z-index:1;
-  animation:artistFloat 8s ease-in-out infinite;
-}
-@keyframes artistFloat { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.03) translateY(-8px); } }
-.preview-photo-bg::after {
-  content:''; position:absolute; inset:0; z-index:1;
-  background:linear-gradient(to right, #150730 0%, rgba(21,7,48,0.85) 25%, rgba(21,7,48,0.3) 55%, transparent 100%);
+/* Dark gradient bottom */
+.preview-photo-bottom{
+  position:absolute; bottom:0; left:0; right:0; height:50%; z-index:3;
+  background:linear-gradient(to top, #0d0620 0%, transparent 100%);
 }
 
-/* Preview top bar */
-.preview-topbar {
-  position:absolute; top:0; left:0; right:0; z-index:10;
-  display:flex; align-items:center; justify-content:flex-end;
-  padding:14px 20px; gap:14px;
+/* Topbar (fullscreen pill + clock) */
+.preview-topbar{
+  position:absolute; top:0; right:0; z-index:20;
+  display:flex; align-items:center; gap:12px; padding:14px 20px;
 }
-.preview-fullscreen-tag {
-  display:flex; align-items:center; gap:6px;
-  font-size:0.75rem; color:rgba(255,255,255,0.7);
-  background:rgba(0,0,0,0.35); padding:5px 10px; border-radius:6px;
-  backdrop-filter:blur(4px);
+.fullscreen-tag{
+  display:flex; align-items:center; gap:6px; font-size:.73rem;
+  color:rgba(255,255,255,.7); background:rgba(0,0,0,.35); backdrop-filter:blur(4px);
+  padding:5px 11px; border-radius:6px; white-space:nowrap;
 }
-.preview-fullscreen-tag svg { width:14px; height:14px; fill:currentColor; }
-.preview-clock {
-  font-size:0.82rem; font-weight:600; color:#fff;
-  background:rgba(255,255,255,0.12); padding:5px 12px; border-radius:6px;
-  backdrop-filter:blur(4px); font-variant-numeric:tabular-nums;
+.fullscreen-tag svg{ width:13px; height:13px; fill:currentColor; }
+.clock-pill{
+  font-size:.82rem; font-weight:600; color:#fff;
+  background:rgba(255,255,255,.12); backdrop-filter:blur(4px);
+  padding:5px 12px; border-radius:6px; font-variant-numeric:tabular-nums;
 }
 
-/* Preview content */
-.preview-content {
-  position:relative; z-index:5;
-  display:flex; align-items:flex-start; gap:20px;
-  padding:48px 24px 28px; width:60%;
+/* Left: song info */
+.preview-info{
+  position:relative; z-index:10;
+  display:flex; align-items:flex-start; gap:18px;
+  padding:44px 22px 24px; width:58%;
 }
-.preview-album-art {
-  flex:0 0 160px; height:160px; border-radius:8px; overflow:hidden;
-  background:var(--art-grad, linear-gradient(135deg, #c2185b, #7b0a34));
+.preview-thumb{
+  flex:0 0 152px; height:152px; border-radius:8px; overflow:hidden;
   display:flex; align-items:center; justify-content:center;
-  font-size:4rem; box-shadow:0 6px 24px rgba(0,0,0,0.5);
-  flex-shrink:0;
+  font-size:4rem; box-shadow:0 6px 24px rgba(0,0,0,.6); flex-shrink:0;
 }
-.preview-details { flex:1; min-width:0; }
-.preview-song-title {
-  font-size:1.6rem; font-weight:800; color:#fff;
-  line-height:1.15; margin-bottom:8px;
-}
-.preview-meta {
+.preview-text{ flex:1; min-width:0; }
+.preview-title{ font-size:1.65rem; font-weight:800; color:#fff; line-height:1.15; margin-bottom:8px; }
+.preview-meta{
   display:flex; align-items:center; gap:8px;
-  font-size:0.85rem; color:var(--muted); margin-bottom:12px;
+  font-size:.84rem; color:var(--muted); margin-bottom:10px;
 }
-.preview-meta svg { width:16px; height:16px; fill:currentColor; opacity:0.6; }
-.preview-desc { font-size:0.82rem; color:rgba(255,255,255,0.6); line-height:1.55; max-width:500px; }
-.preview-sing-btn {
-  margin-top:16px; display:inline-flex; align-items:center; gap:8px;
+.preview-meta svg{ width:15px; height:15px; fill:currentColor; opacity:.55; }
+.preview-desc{ font-size:.82rem; color:rgba(255,255,255,.58); line-height:1.56; max-width:480px; }
+.preview-play-btn{
+  margin-top:14px; display:inline-flex; align-items:center; gap:8px;
   background:var(--yellow); color:#1a0800;
-  font-family:'Outfit',sans-serif; font-weight:800; font-size:0.88rem;
+  font-family:'Outfit',sans-serif; font-weight:800; font-size:.88rem;
   padding:10px 22px; border-radius:100px; border:none; cursor:pointer;
-  transition:all 0.2s; box-shadow:0 4px 16px rgba(255,224,0,0.25);
+  transition:all .2s; box-shadow:0 4px 16px rgba(255,224,0,.25);
 }
-.preview-sing-btn:hover { background:#fff5a0; transform:scale(1.04); }
+.preview-play-btn:hover{ background:#fff5a0; transform:scale(1.04); }
 
-/* EPG list */
-.epg-scroll {
+/* EPG list — FLAT, no genre headers */
+.epg-scroll{
   flex:1; overflow-y:auto;
-  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
+  scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.1) transparent;
 }
-.epg-scroll::-webkit-scrollbar { width:3px; }
-.epg-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
+.epg-scroll::-webkit-scrollbar{ width:3px; }
+.epg-scroll::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.1); border-radius:2px; }
 
-.epg-genre-hdr {
-  padding:16px 22px 8px; font-size:0.68rem; font-weight:700;
-  letter-spacing:2px; text-transform:uppercase; color:var(--yellow);
-  display:flex; align-items:center; gap:8px;
-}
-.epg-genre-hdr::after { content:''; flex:1; height:1px; background:rgba(255,224,0,0.18); }
-
-.epg-row {
+.epg-row{
   padding:14px 22px; cursor:pointer; position:relative;
   border-left:3px solid transparent;
-  border-bottom:1px solid rgba(255,255,255,0.04);
-  transition:all 0.15s; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:all .15s; display:flex; align-items:center; justify-content:space-between;
 }
-.epg-row:hover { background:rgba(255,255,255,0.05); border-left-color:rgba(255,224,0,0.35); }
-.epg-row.sel {
-  background:rgba(255,224,0,0.07);
+.epg-row:hover{ background:rgba(255,255,255,.05); border-left-color:rgba(255,224,0,.35); }
+.epg-row.sel{
+  background:rgba(255,224,0,.07);
   border-left-color:var(--yellow);
-  outline:1px solid rgba(255,224,0,0.2);
-  outline-offset:-1px;
+  outline:1px solid rgba(255,224,0,.22); outline-offset:-1px;
 }
-.epg-left {}
-.epg-artist { font-size:0.72rem; color:var(--muted); font-weight:400; margin-bottom:3px; }
-.epg-title { font-size:1rem; font-weight:600; color:#fff; }
-.epg-row.sel .epg-title { color:#fff; }
-.epg-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.epg-dur { font-size:0.7rem; color:var(--dim); font-variant-numeric:tabular-nums; }
-.epg-arrow {
+/* Dimmed rows above selected */
+.epg-row.above{ opacity:.5; }
+/* Bottom fade */
+.epg-row.fading{ opacity:.35; }
+.epg-artist{ font-size:.72rem; color:var(--muted); font-weight:400; margin-bottom:3px; letter-spacing:.2px; }
+.epg-title{ font-size:1rem; font-weight:600; color:#fff; }
+.epg-row.sel .epg-title{ color:#fff; }
+.epg-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.epg-dur{ font-size:.7rem; color:var(--dim); font-variant-numeric:tabular-nums; }
+.epg-arr{
   width:28px; height:28px; border-radius:50%;
   background:var(--yellow); display:flex; align-items:center; justify-content:center;
-  opacity:0; transition:opacity 0.15s;
+  opacity:0; transition:opacity .15s;
 }
-.epg-row:hover .epg-arrow, .epg-row.sel .epg-arrow { opacity:1; }
-.epg-arrow svg { width:11px; height:11px; fill:#1a0800; margin-left:2px; }
+.epg-row:hover .epg-arr, .epg-row.sel .epg-arr{ opacity:1; }
+.epg-arr svg{ width:11px; height:11px; fill:#1a0800; margin-left:2px; }
 
-/* Browser back bar */
-.browser-bar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:12px 22px; background:rgba(12,5,32,0.7);
-  backdrop-filter:blur(8px); border-bottom:1px solid rgba(255,255,255,0.06);
-  flex-shrink:0;
-}
-.bbar-back {
-  display:flex; align-items:center; gap:7px;
-  background:none; border:1px solid rgba(255,255,255,0.2);
-  color:rgba(255,255,255,0.7); cursor:pointer; padding:6px 14px;
-  border-radius:6px; font-family:'Outfit',sans-serif; font-size:0.78rem;
-  transition:all 0.2s;
-}
-.bbar-back:hover { border-color:var(--yellow); color:var(--yellow); }
-.bbar-back svg { width:13px; height:13px; fill:currentColor; }
-.bbar-genre { font-family:'Fredoka One',cursive; font-size:1.3rem; color:var(--yellow); }
-
-/* ════════════════════════════════════════
-   SCREEN 3 — KARAOKE PLAYER
-════════════════════════════════════════ */
-#player { display:flex; flex-direction:column; }
-.kp-bg { position:absolute; inset:0; z-index:0; background-size:400% 400%; animation:kpBg 14s ease infinite; }
-@keyframes kpBg { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
-.kp-vignette { position:absolute; inset:0; z-index:1; background:radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.7) 100%); }
-.kp-particles { position:absolute; inset:0; z-index:2; pointer-events:none; }
-.kpp { position:absolute; opacity:0; animation:kppRise var(--d,9s) ease-in-out infinite var(--dl,0s); font-size:var(--fs,1.3rem); }
-@keyframes kppRise {
-  0%   { opacity:0; transform:translateY(60px) scale(0.5); }
-  15%  { opacity:0.35; }
-  85%  { opacity:0.18; }
-  100% { opacity:0; transform:translateY(-100px) scale(1.15) rotate(20deg); }
+/* ════════════════════════════════════
+   PLAYER — SCREEN 3
+════════════════════════════════════ */
+#player{ display:flex; flex-direction:column; }
+.kp-bg{ position:absolute; inset:0; z-index:0; background-size:400% 400%; animation:kpBg 14s ease infinite; }
+@keyframes kpBg{ 0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;} }
+.kp-vig{ position:absolute; inset:0; z-index:1; background:radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,.7) 100%); }
+.kp-ptcl{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.kpp{ position:absolute; opacity:0; animation:kppR var(--d,9s) ease-in-out infinite var(--dl,0s); font-size:var(--fs,1.3rem); }
+@keyframes kppR{
+  0%{opacity:0;transform:translateY(60px) scale(.5);}
+  15%{opacity:.35;}85%{opacity:.18;}
+  100%{opacity:0;transform:translateY(-100px) scale(1.15) rotate(20deg);}
 }
 
 /* Waiting overlay */
-.kp-wait {
+.kp-wait{
   position:absolute; inset:0; z-index:30;
-  background:rgba(10,4,28,0.72); backdrop-filter:blur(4px);
+  background:rgba(8,4,22,.72); backdrop-filter:blur(4px);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
-  transition:opacity 0.5s;
+  transition:opacity .5s;
 }
-.kp-wait.gone { opacity:0; pointer-events:none; }
-.kpw-emoji { font-size:5rem; animation:kpwBounce 1.8s ease-in-out infinite; }
-@keyframes kpwBounce { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-14px) scale(1.1); } }
-.kpw-title { font-family:'Fredoka One',cursive; font-size:2.4rem; color:#fff; }
-.kpw-sub { font-size:0.86rem; color:var(--muted); }
-.kpw-btn {
+.kp-wait.gone{ opacity:0; pointer-events:none; }
+.kpw-emoji{ font-size:5rem; animation:kpwB 1.8s ease-in-out infinite; }
+@keyframes kpwB{ 0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.1);} }
+.kpw-title{ font-family:'Fredoka One',cursive; font-size:2.4rem; color:#fff; }
+.kpw-sub{ font-size:.86rem; color:var(--muted); }
+.kpw-btn{
   margin-top:10px; background:var(--yellow); color:#1a0800;
   font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem;
   padding:13px 40px; border-radius:100px; border:none; cursor:pointer;
-  box-shadow:0 4px 24px rgba(255,224,0,0.35); transition:all 0.2s;
-  animation:kpwBounce 2s ease-in-out infinite;
+  box-shadow:0 4px 24px rgba(255,224,0,.35); transition:all .2s;
+  animation:kpwB 2s ease-in-out infinite;
 }
-.kpw-btn:hover { background:#fff5a0; transform:scale(1.06); }
+.kpw-btn:hover{ background:#fff5a0; transform:scale(1.06); }
 
-.kp-ui { position:relative; z-index:10; display:flex; flex-direction:column; height:100%; }
-
-/* Player topbar */
-.kp-topbar {
+.kp-ui{ position:relative; z-index:10; display:flex; flex-direction:column; height:100%; }
+.kp-topbar{
   display:flex; align-items:center; justify-content:space-between; padding:15px 20px;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.75), transparent);
+  background:linear-gradient(to bottom, rgba(0,0,0,.75), transparent);
 }
-.kp-back {
+.kp-back{
   display:flex; align-items:center; gap:7px;
-  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
   color:#fff; cursor:pointer; padding:7px 15px; border-radius:8px;
-  font-family:'Outfit',sans-serif; font-size:0.78rem; transition:all 0.2s; backdrop-filter:blur(4px);
+  font-family:'Outfit',sans-serif; font-size:.78rem; transition:all .2s; backdrop-filter:blur(4px);
 }
-.kp-back:hover { border-color:var(--yellow); color:var(--yellow); background:rgba(255,224,0,0.12); }
-.kp-back svg { width:13px; height:13px; fill:currentColor; }
-.kp-meta { text-align:center; }
-.kp-title { font-family:'Fredoka One',cursive; font-size:1.1rem; color:#fff; }
-.kp-by { font-size:0.72rem; color:rgba(255,255,255,0.5); margin-top:2px; }
-.kp-logo { font-family:'Fredoka One',cursive; font-size:1rem; color:var(--yellow); opacity:0.6; }
+.kp-back:hover{ border-color:var(--yellow); color:var(--yellow); background:rgba(255,224,0,.12); }
+.kp-back svg{ width:13px; height:13px; fill:currentColor; }
+.kp-meta{ text-align:center; }
+.kp-title{ font-family:'Fredoka One',cursive; font-size:1.1rem; color:#fff; }
+.kp-by{ font-size:.72rem; color:rgba(255,255,255,.5); margin-top:2px; }
+.kp-logo{ font-family:'Fredoka One',cursive; font-size:1rem; color:var(--yellow); opacity:.6; }
 
-/* Lyrics */
-.lyrics-stage {
+.lyrics-stage{
   flex:1; display:flex; flex-direction:column;
   align-items:center; justify-content:center; padding:20px 50px; text-align:center; gap:18px;
 }
-.lyr-prev { font-family:'Fredoka One',cursive; font-size:clamp(0.95rem,2vw,1.4rem); color:rgba(255,255,255,0.22); min-height:1.6em; }
-.lyr-curr { font-family:'Fredoka One',cursive; font-size:clamp(1.9rem,4.5vw,3.4rem); line-height:1.12; min-height:1.4em; }
-.lyr-next { font-family:'Fredoka One',cursive; font-size:clamp(0.9rem,1.8vw,1.3rem); color:rgba(255,255,255,0.2); min-height:1.6em; }
-.lw { display:inline-block; margin:0 3px; color:rgba(255,255,255,0.35); transition:color 0.12s, text-shadow 0.12s, transform 0.12s; }
-.lw.active { color:#fff; text-shadow:0 0 28px rgba(255,255,255,0.5); transform:scale(1.05); }
-.lw.sung { color:var(--yellow); text-shadow:0 0 18px rgba(255,224,0,0.4); }
+.lyr-prev{ font-family:'Fredoka One',cursive; font-size:clamp(.95rem,2vw,1.4rem); color:rgba(255,255,255,.22); min-height:1.6em; }
+.lyr-curr{ font-family:'Fredoka One',cursive; font-size:clamp(1.9rem,4.5vw,3.4rem); line-height:1.12; min-height:1.4em; }
+.lyr-next{ font-family:'Fredoka One',cursive; font-size:clamp(.9rem,1.8vw,1.3rem); color:rgba(255,255,255,.2); min-height:1.6em; }
+.lw{ display:inline-block; margin:0 3px; color:rgba(255,255,255,.35); transition:color .12s, text-shadow .12s, transform .12s; }
+.lw.active{ color:#fff; text-shadow:0 0 28px rgba(255,255,255,.5); transform:scale(1.05); }
+.lw.sung{ color:var(--yellow); text-shadow:0 0 18px rgba(255,224,0,.4); }
 
-/* Controls */
-.kp-bottom {
-  background:linear-gradient(to top, rgba(0,0,0,0.88), transparent);
-  padding:10px 20px 20px;
-}
-.kp-controls { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-.kpc { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.65); padding:5px; transition:color 0.18s, transform 0.14s; }
-.kpc:hover { color:var(--yellow); transform:scale(1.15); }
-.kpc svg { width:20px; height:20px; fill:currentColor; display:block; }
-.kpc.big svg { width:28px; height:28px; }
-.kp-time { margin-left:auto; font-size:0.78rem; color:rgba(255,255,255,0.45); font-variant-numeric:tabular-nums; }
-.prog-track { width:100%; height:3px; background:rgba(255,255,255,0.18); border-radius:2px; cursor:pointer; }
-.prog-fill { height:100%; background:var(--yellow); border-radius:2px; transition:width 0.45s linear; position:relative; }
-.prog-fill::after {
+.kp-bottom{ background:linear-gradient(to top, rgba(0,0,0,.88), transparent); padding:10px 20px 20px; }
+.kp-ctrl{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.kpc{ background:none; border:none; cursor:pointer; color:rgba(255,255,255,.65); padding:5px; transition:color .18s, transform .14s; }
+.kpc:hover{ color:var(--yellow); transform:scale(1.15); }
+.kpc svg{ width:20px; height:20px; fill:currentColor; display:block; }
+.kpc.big svg{ width:28px; height:28px; }
+.kp-time{ margin-left:auto; font-size:.78rem; color:rgba(255,255,255,.45); font-variant-numeric:tabular-nums; }
+.prog-track{ width:100%; height:3px; background:rgba(255,255,255,.18); border-radius:2px; cursor:pointer; }
+.prog-fill{ height:100%; background:var(--yellow); border-radius:2px; transition:width .45s linear; position:relative; }
+.prog-fill::after{
   content:''; position:absolute; right:-5px; top:50%; transform:translateY(-50%);
   width:10px; height:10px; border-radius:50%; background:#fff;
-  box-shadow:0 0 8px rgba(255,224,0,0.8); opacity:0; transition:opacity 0.2s;
+  box-shadow:0 0 8px rgba(255,224,0,.8); opacity:0; transition:opacity .2s;
 }
-.prog-track:hover .prog-fill::after { opacity:1; }
+.prog-track:hover .prog-fill::after{ opacity:1; }
 
-/* ═══ RESPONSIVE ═══ */
-@media (max-width:768px) {
-  :root { --sidebar-w:54px; }
-  .si { width:40px; height:40px; }
-  .hero-row { flex-direction:column; min-height:auto; }
-  .hero-cards { height:220px; }
-  .feat-card { height:200px !important; margin-top:0 !important; }
-  .preview-content { width:100%; padding:40px 16px 20px; }
-  .preview-photo-right { display:none; }
-}
-body { animation:bFade 0.4s ease; }
-@keyframes bFade { from { opacity:0; } to { opacity:1; } }
+body{ animation:bFd .4s ease; }
+@keyframes bFd{ from{opacity:0;}to{opacity:1;} }
 </style>
 </head>
 <body>
 
 <div class="bg-base"></div>
 
-<!-- ── MUSIC NOTE BG ANIMATION (always present, visible on home) ── -->
-<div class="music-anim-layer" id="music-anim-layer">
-  <div class="staff-lines">
-    <div class="staff-line" style="--r:-8deg"></div>
-    <div class="staff-line" style="--r:-6deg"></div>
-    <div class="staff-line" style="--r:-5deg"></div>
-    <div class="staff-line" style="--r:-4deg"></div>
-    <div class="staff-line" style="--r:-3deg"></div>
-  </div>
-  <div class="treble-clef">𝄞</div>
-  <!-- Floating bg notes -->
-  <div class="bg-note" style="left:18%;top:12%;--sz:2.4rem;--c:#d946ef;--op:0.3;--dur:4.2s;--delay:0s;--mx:10px;--my:-20px;--ra:-12deg;--rb:8deg">♪</div>
-  <div class="bg-note" style="left:28%;top:25%;--sz:1.6rem;--c:#818cf8;--op:0.25;--dur:5.5s;--delay:1s;--mx:-8px;--my:-14px;--ra:5deg;--rb:-10deg">♫</div>
-  <div class="bg-note" style="left:42%;top:8%;--sz:1.2rem;--c:#f472b6;--op:0.22;--dur:3.8s;--delay:0.5s;--mx:6px;--my:-16px;--ra:-8deg;--rb:12deg">♩</div>
-  <div class="bg-note" style="left:55%;top:18%;--sz:2rem;--c:#c084fc;--op:0.2;--dur:6s;--delay:1.8s;--mx:12px;--my:-22px;--ra:10deg;--rb:-5deg">♬</div>
-  <div class="bg-note" style="left:12%;top:35%;--sz:1.4rem;--c:#f9a8d4;--op:0.28;--dur:4.5s;--delay:2s;--mx:-5px;--my:-12px;--ra:-15deg;--rb:5deg">♪</div>
-  <div class="bg-note" style="left:36%;top:40%;--sz:1rem;--c:#a78bfa;--op:0.18;--dur:7s;--delay:0.3s;--mx:8px;--my:-18px;--ra:8deg;--rb:-12deg">♫</div>
-  <div class="bg-note" style="left:50%;top:30%;--sz:1.8rem;--c:#e879f9;--op:0.22;--dur:5s;--delay:1.2s;--mx:-10px;--my:-14px;--ra:-5deg;--rb:10deg">♩</div>
-  <div class="bg-note" style="left:22%;top:50%;--sz:1.1rem;--c:#c084fc;--op:0.15;--dur:6.5s;--delay:3s;--mx:6px;--my:-20px;--ra:12deg;--rb:-8deg">♬</div>
+<!-- Music staff lines — top-left only -->
+<div class="music-bg" id="music-bg">
+  <div class="mstaff" style="--rt:-9deg"></div>
+  <div class="mstaff" style="--rt:-7deg"></div>
+  <div class="mstaff" style="--rt:-6deg"></div>
+  <div class="mstaff" style="--rt:-5deg"></div>
+  <div class="mstaff" style="--rt:-4deg"></div>
+  <div class="treble">𝄞</div>
+  <!-- floating notes in top-left zone -->
+  <div class="fnote" style="left:15%;top:15%;--c:#d946ef;--fs:2.2rem;--op:.32;--d:4.2s;--dl:0s;--ra:-12deg;--rb:8deg;--tx:10px;--ty:-18px">♪</div>
+  <div class="fnote" style="left:28%;top:28%;--c:#818cf8;--fs:1.5rem;--op:.25;--d:5.5s;--dl:1s;--ra:5deg;--rb:-10deg;--tx:-8px;--ty:-12px">♫</div>
+  <div class="fnote" style="left:40%;top:10%;--c:#f472b6;--fs:1.1rem;--op:.2;--d:3.8s;--dl:.5s;--ra:-8deg;--rb:12deg;--tx:6px;--ty:-14px">♩</div>
+  <div class="fnote" style="left:8%;top:40%;--c:#c084fc;--fs:1.3rem;--op:.28;--d:4.5s;--dl:2s;--ra:-15deg;--rb:5deg;--tx:-5px;--ty:-10px">♬</div>
+  <div class="fnote" style="left:52%;top:22%;--c:#a78bfa;--fs:.9rem;--op:.16;--d:7s;--dl:.3s;--ra:8deg;--rb:-12deg;--tx:8px;--ty:-16px">♪</div>
 </div>
 
-<!-- Stars -->
-<div id="stars-layer"></div>
+<!-- Stars (sparse) -->
+<div id="stars"></div>
 
 <div class="app">
 
-  <!-- ── SIDEBAR ── -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-avatar">E</div>
     <nav class="sb-nav">
@@ -658,78 +609,85 @@ body { animation:bFade 0.4s ease; }
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a4 4 0 0 1 4 4v7a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v7a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V22h2v-1.06A9 9 0 0 0 21 12v-2h-2z"/></svg>
       </div>
     </nav>
-    <div class="si sb-bottom" title="Settings">
+    <div class="si sb-bot" title="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
     </div>
   </aside>
 
-  <!-- ── MAIN ── -->
   <main class="main">
 
-    <!-- ══════ SCREEN 1: HOME ══════ -->
+    <!-- ══ SCREEN 1: HOME ══ -->
     <div id="home" class="screen active">
-      <!-- tubi logo top right -->
-      <div class="tubi-corner">tubi</div>
+      <div class="tubi-tr">tubi</div>
 
-      <!-- Hero row -->
       <div class="hero-row">
-        <!-- Brand left -->
+        <!-- Brand -->
         <div class="hero-brand">
           <div class="logo-wrap">
             <div class="logo-text">tub<span class="logo-mic">🎤</span>oke</div>
-            <span class="logo-note n1">♪</span>
-            <span class="logo-note n2">♫</span>
-            <span class="logo-note n3">♩</span>
-            <span class="logo-note n4">♬</span>
-            <span class="logo-note n5">♪</span>
+            <span class="ln ln1">♪</span><span class="ln ln2">♫</span>
+            <span class="ln ln3">♩</span><span class="ln ln4">♬</span><span class="ln ln5">♪</span>
           </div>
-          <button class="view-all-btn" onclick="showBrowser('holiday')">View All Creators</button>
+          <button class="view-playlists-btn" onclick="showBrowser('holiday')">View All Playlists</button>
         </div>
 
-        <!-- Featured cards right -->
+        <!-- Featured playlist cards -->
         <div class="hero-cards">
-          <!-- Card 1: Holiday Hits -->
+          <!-- Holiday Hits -->
           <div class="feat-card fc-holiday" onclick="showBrowser('holiday')">
-            <div class="fc-holiday-inner">
-              <div class="fc-holiday-icon">🎁</div>
-              <div class="fc-holiday-text">HOLIDAY<br>HITS</div>
+            <div class="pine-layer">
+              <div class="pine-emoji" style="top:-10%;left:-10%;--pfs:6rem;--pop:.3;--pd:9s;--pdl:0s;--pra:-4deg;--prb:3deg;">🌲</div>
+              <div class="pine-emoji" style="top:-5%;right:-8%;--pfs:5rem;--pop:.25;--pd:7s;--pdl:1s;--pra:-2deg;--prb:4deg;">🌲</div>
+              <div class="pine-emoji" style="top:20%;left:5%;--pfs:3.5rem;--pop:.2;--pd:10s;--pdl:.5s;--pra:-5deg;--prb:2deg;">🌲</div>
+              <div class="pine-emoji" style="bottom:-8%;left:-5%;--pfs:7rem;--pop:.3;--pd:8s;--pdl:1.5s;--pra:-3deg;--prb:3deg;">🌲</div>
+              <div class="pine-emoji" style="bottom:-5%;right:-6%;--pfs:5.5rem;--pop:.28;--pd:11s;--pdl:.8s;--pra:-2deg;--prb:4deg;">🌲</div>
+              <!-- Ornaments -->
+              <div class="orn" style="top:25%;left:22%;--ofs:1.6rem;--oop:.75;--od:3.5s;--odl:0s;--ora:-10deg;--orb:10deg;">🔮</div>
+              <div class="orn" style="top:35%;right:18%;--ofs:1.4rem;--oop:.7;--od:4.2s;--odl:.8s;--ora:-8deg;--orb:8deg;">🔴</div>
+              <div class="orn" style="top:55%;left:30%;--ofs:1.2rem;--oop:.65;--od:3.8s;--odl:.4s;--ora:-6deg;--orb:9deg;">⭐</div>
+              <div class="orn" style="top:15%;right:30%;--ofs:1rem;--oop:.6;--od:5s;--odl:1.2s;--ora:-12deg;--orb:12deg;">🟡</div>
             </div>
-            <div class="fc-holiday-glow"></div>
-            <div class="fc-sparkles" id="sparkles-container"></div>
-            <div class="fc-overlay"></div>
+            <div class="fc-holiday-content">
+              <div class="fc-holiday-icon">🎁</div>
+              <div class="fc-holiday-label">HOLIDAY<br>HITS</div>
+            </div>
+            <div class="fc-hover"></div>
           </div>
-          <!-- Card 2: Love Songs (featured/center) -->
+
+          <!-- Love, tubi -->
           <div class="feat-card fc-love" onclick="showBrowser('love')">
-            <div class="fc-love-inner">
-              <div class="fc-love-hearts" id="love-hearts"></div>
+            <div class="fc-love-content">
+              <div class="fc-love-hearts-layer" id="lovehearts"></div>
               <div class="fc-love-title">Love,</div>
               <div class="fc-love-sub">tubioke</div>
             </div>
-            <div class="fc-overlay"></div>
+            <div class="fc-hover"></div>
           </div>
-          <!-- Card 3: Summer Jams -->
-          <div class="feat-card fc-summer" onclick="showBrowser('summer')">
-            <div class="fc-summer-inner">
-              <div class="fc-summer-moon">🌅</div>
-              <div class="fc-summer-text">SUMMER<br>JAMS</div>
-              <div class="fc-summer-sub">tubioke</div>
+
+          <!-- Terror -->
+          <div class="feat-card fc-terror" onclick="showBrowser('summer')">
+            <div class="terror-moon">🌕</div>
+            <div class="terror-trees">🌲🌲🌲🌲🌲</div>
+            <div class="fc-terror-content">
+              <div class="terror-pumpkin">🎃</div>
+              <div class="fc-terror-text">TERROR</div>
+              <div class="fc-terror-sub">on tubioke</div>
             </div>
-            <div class="fc-overlay"></div>
+            <div class="fc-hover"></div>
           </div>
         </div>
       </div>
 
-      <!-- Recommended -->
-      <div class="recommended-section">
-        <div class="rec-label">Recommended</div>
-        <div class="album-row" id="album-row"></div>
+      <!-- Trending Tunes -->
+      <div class="trending-section">
+        <div class="trending-label">Trending Tunes</div>
+        <div class="posters-row" id="posters-row"></div>
       </div>
     </div>
 
-    <!-- ══════ SCREEN 2: BROWSER (EPG) ══════ -->
+    <!-- ══ SCREEN 2: BROWSER ══ -->
     <div id="browser" class="screen">
-      <!-- Back bar -->
-      <div class="browser-bar">
+      <div class="bbar">
         <button class="bbar-back" onclick="goHome()">
           <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Back
@@ -738,50 +696,53 @@ body { animation:bFade 0.4s ease; }
         <div style="width:80px"></div>
       </div>
 
-      <!-- Preview strip (full width top) -->
+      <!-- Preview strip -->
       <div class="preview-strip">
-        <!-- Artist photo right -->
-        <div class="preview-photo-bg">
-          <div class="preview-photo-right" id="preview-photo-right">
-            <div class="preview-photo-artist-emoji" id="preview-artist-emoji">🎅</div>
+        <!-- Right photo panel -->
+        <div class="preview-photo-panel">
+          <div class="preview-photo-bg-color" id="preview-photo-bg">
+            <div class="preview-photo-emoji" id="preview-photo-emoji">🎅</div>
           </div>
+          <div class="preview-photo-fade"></div>
+          <div class="preview-photo-bottom"></div>
         </div>
-        <!-- Topbar (fullscreen + clock) -->
+
+        <!-- Top bar -->
         <div class="preview-topbar">
-          <div class="preview-fullscreen-tag">
+          <div class="fullscreen-tag">
             <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
             Fullscreen in 17s
           </div>
-          <div class="preview-clock" id="preview-clock">12:38 PM</div>
+          <div class="clock-pill" id="browser-clock">12:38 PM</div>
         </div>
-        <!-- Song info left -->
-        <div class="preview-content">
-          <div class="preview-album-art" id="preview-album-art">🎅</div>
-          <div class="preview-details">
-            <div class="preview-song-title" id="preview-title">All I Want For Christmas Is You</div>
+
+        <!-- Left info -->
+        <div class="preview-info">
+          <div class="preview-thumb" id="preview-thumb" style="background:linear-gradient(135deg,#c2185b,#7b0a34)">🎅</div>
+          <div class="preview-text">
+            <div class="preview-title" id="preview-title">All I Want For Christmas Is You</div>
             <div class="preview-meta">
               <span id="preview-artist">Mariah Carey</span>
               <span>•</span>
               <span id="preview-dur">4mins 1sec</span>
               <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <div class="preview-desc" id="preview-desc">The ultimate holiday bop! Mariah Carey &amp; Walter Afanasieff reportedly wrote this record-breaking classic in just 15 minutes.</div>
-            <button class="preview-sing-btn" onclick="playCurrent()">▶ &nbsp;Start Singing</button>
+            <div class="preview-desc" id="preview-desc">The ultimate holiday bop! Mariah Carey & Walter Afanasieff reportedly wrote this record-breaking classic in just 15 minutes.</div>
+            <button class="preview-play-btn" onclick="playCurrent()">▶ &nbsp;Start Singing</button>
           </div>
         </div>
       </div>
 
-      <!-- EPG list -->
+      <!-- EPG — flat list, no genre headers -->
       <div class="epg-scroll" id="epg-list"></div>
     </div>
 
-    <!-- ══════ SCREEN 3: KARAOKE PLAYER ══════ -->
+    <!-- ══ SCREEN 3: KARAOKE PLAYER ══ -->
     <div id="player" class="screen">
       <div class="kp-bg" id="kp-bg"></div>
-      <div class="kp-vignette"></div>
-      <div class="kp-particles" id="kp-particles"></div>
+      <div class="kp-vig"></div>
+      <div class="kp-ptcl" id="kp-ptcl"></div>
 
-      <!-- Waiting -->
       <div class="kp-wait" id="kp-wait">
         <div class="kpw-emoji" id="kpw-emoji">🎤</div>
         <div class="kpw-title">Get Ready!</div>
@@ -807,7 +768,7 @@ body { animation:bFade 0.4s ease; }
           <div class="lyr-next" id="lyr-next"></div>
         </div>
         <div class="kp-bottom">
-          <div class="kp-controls">
+          <div class="kp-ctrl">
             <button class="kpc" onclick="restartSong()">
               <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3.09-6.83" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M3 3v6h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
@@ -831,362 +792,338 @@ body { animation:bFade 0.4s ease; }
 </div>
 
 <script>
-/* ═══════════════ DATA ═══════════════ */
+/* ═══ DATA ═══ */
 const GENRES = [
   {
     id:'holiday', name:'Holiday Hits', emoji:'🎄',
     kgradient:'linear-gradient(-45deg,#0a1628,#1e3a5c,#0d2040,#0a1830)',
-    photoGrad:'linear-gradient(135deg,#1a3a6c 0%,#0d2040 50%,#102860 100%)',
+    photoBg:'linear-gradient(135deg,#0d2040 0%,#1a3a6c 50%,#0a1828 100%)',
     particles:['❄️','⛄','🎁','⭐','✨','🌟','🎅'],
     songs:[
-      { id:'h1', title:'All I Want For Christmas Is You', artist:'Mariah Carey', emoji:'🎅',
-        dur:'4mins 1sec', durSec:241,
-        artGrad:'linear-gradient(135deg,#c2185b,#7b0a34)',
-        desc:'The ultimate holiday bop! Mariah Carey & Walter Afanasieff reportedly wrote this record-breaking classic in just 15 minutes.',
-        lyrics:[
-          {line:"I don't want a lot for Christmas",words:["I","don't","want","a","lot","for","Christmas"],ms:3600},
-          {line:"There is just one thing I need",words:["There","is","just","one","thing","I","need"],ms:4000},
-          {line:"I don't care about the presents",words:["I","don't","care","about","the","presents"],ms:3600},
-          {line:"Underneath the Christmas tree",words:["Underneath","the","Christmas","tree"],ms:3200},
-          {line:"I just want you for my own",words:["I","just","want","you","for","my","own"],ms:3600},
-          {line:"More than you could ever know",words:["More","than","you","could","ever","know"],ms:3600},
-          {line:"Make my wish come true",words:["Make","my","wish","come","true"],ms:3000},
-          {line:"All I want for Christmas is you",words:["All","I","want","for","Christmas","is","you"],ms:5000},
-          {line:"You baby",words:["You","baby"],ms:2800},
-          {line:"I won't ask for much this Christmas",words:["I","won't","ask","for","much","this","Christmas"],ms:4200},
-          {line:"I won't even wish for snow",words:["I","won't","even","wish","for","snow"],ms:3600}
-        ]
-      },
-      { id:'h2', title:"Baby It's Cold Outside", artist:'Dean Martin', emoji:'☃️',
-        dur:'3mins 8sec', durSec:188, artGrad:'linear-gradient(135deg,#1a3a6c,#0d2040)',
-        desc:"A classic duet! This cozy back-and-forth became one of the most beloved winter songs of all time.",
-        lyrics:[
-          {line:"I really can't stay",words:["I","really","can't","stay"],ms:3000},
-          {line:"Baby it's cold outside",words:["Baby","it's","cold","outside"],ms:3500},
-          {line:"I've got to go away",words:["I've","got","to","go","away"],ms:3200},
-          {line:"Baby it's cold outside",words:["Baby","it's","cold","outside"],ms:3500},
-          {line:"This evening has been so very nice",words:["This","evening","has","been","so","very","nice"],ms:4200},
-          {line:"I'll hold your hands they're just like ice",words:["I'll","hold","your","hands","they're","just","like","ice"],ms:4200},
-          {line:"My mother will start to worry",words:["My","mother","will","start","to","worry"],ms:3600},
-          {line:"Beautiful what's your hurry?",words:["Beautiful","what's","your","hurry?"],ms:3200},
-          {line:"Listen to the fireplace roar",words:["Listen","to","the","fireplace","roar"],ms:3600}
-        ]
-      },
-      { id:'h3', title:'Jingle Bell Rock', artist:'Bobby Helms', emoji:'🔔',
-        dur:'2mins 9sec', durSec:129, artGrad:'linear-gradient(135deg,#7d6608,#4a3a00)',
-        desc:'The quintessential holiday party song! Bobby Helms recorded this cheerful rock tune in 1957.',
-        lyrics:[
-          {line:"Jingle bell, jingle bell, jingle bell rock",words:["Jingle","bell,","jingle","bell,","jingle","bell","rock"],ms:4000},
-          {line:"Jingle bells swing and jingle bells ring",words:["Jingle","bells","swing","and","jingle","bells","ring"],ms:4000},
-          {line:"Snowin' and blowin' up bushels of fun",words:["Snowin'","and","blowin'","up","bushels","of","fun"],ms:4000},
-          {line:"Now the jingle hop has begun",words:["Now","the","jingle","hop","has","begun"],ms:3500},
-          {line:"Jingle bell, jingle bell, jingle bell rock",words:["Jingle","bell,","jingle","bell,","jingle","bell","rock"],ms:4000},
-          {line:"Jingle bells chime in jingle bell time",words:["Jingle","bells","chime","in","jingle","bell","time"],ms:4000},
-          {line:"Dancin' and prancin' in Jingle Bell Square",words:["Dancin'","and","prancin'","in","Jingle","Bell","Square"],ms:4000},
-          {line:"In the frosty air",words:["In","the","frosty","air"],ms:2800}
-        ]
-      },
-      { id:'h4', title:"Rockin' Around the Christmas Tree", artist:'Brenda Lee', emoji:'🎄',
-        dur:'1mins 55sec', durSec:115, artGrad:'linear-gradient(135deg,#1a5e1a,#0a3a0a)',
-        desc:"Brenda Lee was just 13 years old when she recorded this Christmas classic in 1958!",
-        lyrics:[
-          {line:"Rockin' around the Christmas tree",words:["Rockin'","around","the","Christmas","tree"],ms:3500},
-          {line:"At the Christmas party hop",words:["At","the","Christmas","party","hop"],ms:3200},
-          {line:"Mistletoe hung where you can see",words:["Mistletoe","hung","where","you","can","see"],ms:3500},
-          {line:"Every couple tries to stop",words:["Every","couple","tries","to","stop"],ms:3200},
-          {line:"Rockin' around the Christmas tree",words:["Rockin'","around","the","Christmas","tree"],ms:3500},
-          {line:"Let the Christmas spirit ring",words:["Let","the","Christmas","spirit","ring"],ms:3200},
-          {line:"You will get a sentimental feeling",words:["You","will","get","a","sentimental","feeling"],ms:3800},
-          {line:"When you hear voices singing",words:["When","you","hear","voices","singing"],ms:3200}
-        ]
-      },
-      { id:'h5', title:'Last Christmas', artist:'Taylor Swift', emoji:'🌨️',
-        dur:'4mins 27sec', durSec:267, artGrad:'linear-gradient(135deg,#6a1a6a,#3a0a3a)',
-        desc:"Taylor Swift's iconic cover of this Wham! classic became a holiday staple of its own.",
-        lyrics:[
-          {line:"Last Christmas, I gave you my heart",words:["Last","Christmas,","I","gave","you","my","heart"],ms:4500},
-          {line:"But the very next day, you gave it away",words:["But","the","very","next","day,","you","gave","it","away"],ms:5000},
-          {line:"This year, to save me from tears",words:["This","year,","to","save","me","from","tears"],ms:4000},
-          {line:"I'll give it to someone special",words:["I'll","give","it","to","someone","special"],ms:4000},
-          {line:"Once bitten and twice shy",words:["Once","bitten","and","twice","shy"],ms:3500},
-          {line:"I keep my distance but you still catch my eye",words:["I","keep","my","distance","but","you","still","catch","my","eye"],ms:5000}
-        ]
-      },
-      { id:'h6', title:'Merry Christmas Happy Holidays', artist:'*NSYNC', emoji:'⭐',
-        dur:'3mins 32sec', durSec:212, artGrad:'linear-gradient(135deg,#1a3a6c,#0d2040)',
-        desc:"This festive pop hit by *NSYNC has been a holiday staple since 1998.",
-        lyrics:[
-          {line:"It's the most beautiful time of the year",words:["It's","the","most","beautiful","time","of","the","year"],ms:4500},
-          {line:"Lights fill the trees and it's hard to believe",words:["Lights","fill","the","trees","and","it's","hard","to","believe"],ms:5000},
-          {line:"Tomorrow is Christmas",words:["Tomorrow","is","Christmas"],ms:2800},
-          {line:"Merry Christmas, happy holidays",words:["Merry","Christmas,","happy","holidays"],ms:4000},
-          {line:"Merry Christmas, happy holidays",words:["Merry","Christmas,","happy","holidays"],ms:4000}
-        ]
-      }
+      {id:'h1',title:'All I Want For Christmas Is You',artist:'Mariah Carey',emoji:'🎅',
+       dur:'4mins 1sec',durSec:241,artGrad:'linear-gradient(135deg,#c2185b,#7b0a34)',
+       desc:'The ultimate holiday bop! Mariah Carey & Walter Afanasieff reportedly wrote this record-breaking classic in just 15 minutes.',
+       lyrics:[
+         {line:"I don't want a lot for Christmas",words:["I","don't","want","a","lot","for","Christmas"],ms:3600},
+         {line:"There is just one thing I need",words:["There","is","just","one","thing","I","need"],ms:4000},
+         {line:"I don't care about the presents",words:["I","don't","care","about","the","presents"],ms:3600},
+         {line:"Underneath the Christmas tree",words:["Underneath","the","Christmas","tree"],ms:3200},
+         {line:"I just want you for my own",words:["I","just","want","you","for","my","own"],ms:3600},
+         {line:"More than you could ever know",words:["More","than","you","could","ever","know"],ms:3600},
+         {line:"Make my wish come true",words:["Make","my","wish","come","true"],ms:3000},
+         {line:"All I want for Christmas is you",words:["All","I","want","for","Christmas","is","you"],ms:5000},
+         {line:"You baby",words:["You","baby"],ms:2800},
+         {line:"I won't even wish for snow",words:["I","won't","even","wish","for","snow"],ms:3600}
+       ]},
+      {id:'h2',title:"Baby It's Cold Outside",artist:'Dean Martin',emoji:'☃️',
+       dur:'3mins 8sec',durSec:188,artGrad:'linear-gradient(135deg,#1a3a6c,#0d2040)',
+       desc:"A classic cozy duet that has been one of the most beloved winter songs since 1944.",
+       lyrics:[
+         {line:"I really can't stay",words:["I","really","can't","stay"],ms:3000},
+         {line:"Baby it's cold outside",words:["Baby","it's","cold","outside"],ms:3500},
+         {line:"I've got to go away",words:["I've","got","to","go","away"],ms:3200},
+         {line:"Baby it's cold outside",words:["Baby","it's","cold","outside"],ms:3500},
+         {line:"This evening has been so very nice",words:["This","evening","has","been","so","very","nice"],ms:4200},
+         {line:"Beautiful what's your hurry?",words:["Beautiful","what's","your","hurry?"],ms:3200},
+         {line:"Listen to the fireplace roar",words:["Listen","to","the","fireplace","roar"],ms:3600}
+       ]},
+      {id:'h3',title:'Jingle Bell Rock',artist:'Bobby Helms',emoji:'🔔',
+       dur:'2mins 9sec',durSec:129,artGrad:'linear-gradient(135deg,#7d6608,#4a3a00)',
+       desc:'Bobby Helms recorded this cheerful rock tune in 1957 and it became a holiday party staple.',
+       lyrics:[
+         {line:"Jingle bell, jingle bell, jingle bell rock",words:["Jingle","bell,","jingle","bell,","jingle","bell","rock"],ms:4000},
+         {line:"Jingle bells swing and jingle bells ring",words:["Jingle","bells","swing","and","jingle","bells","ring"],ms:4000},
+         {line:"Snowin' and blowin' up bushels of fun",words:["Snowin'","and","blowin'","up","bushels","of","fun"],ms:4000},
+         {line:"Now the jingle hop has begun",words:["Now","the","jingle","hop","has","begun"],ms:3500},
+         {line:"Jingle bells chime in jingle bell time",words:["Jingle","bells","chime","in","jingle","bell","time"],ms:4000},
+         {line:"Dancin' and prancin' in Jingle Bell Square",words:["Dancin'","and","prancin'","in","Jingle","Bell","Square"],ms:4000},
+         {line:"In the frosty air",words:["In","the","frosty","air"],ms:2800}
+       ]},
+      {id:'h4',title:"Rockin' Around the Christmas Tree",artist:'Brenda Lee',emoji:'🎄',
+       dur:'1mins 55sec',durSec:115,artGrad:'linear-gradient(135deg,#1a5e1a,#0a3a0a)',
+       desc:"Brenda Lee was just 13 years old when she recorded this Christmas classic in 1958!",
+       lyrics:[
+         {line:"Rockin' around the Christmas tree",words:["Rockin'","around","the","Christmas","tree"],ms:3500},
+         {line:"At the Christmas party hop",words:["At","the","Christmas","party","hop"],ms:3200},
+         {line:"Mistletoe hung where you can see",words:["Mistletoe","hung","where","you","can","see"],ms:3500},
+         {line:"Rockin' around the Christmas tree",words:["Rockin'","around","the","Christmas","tree"],ms:3500},
+         {line:"Let the Christmas spirit ring",words:["Let","the","Christmas","spirit","ring"],ms:3200},
+         {line:"You will get a sentimental feeling",words:["You","will","get","a","sentimental","feeling"],ms:3800},
+         {line:"When you hear voices singing",words:["When","you","hear","voices","singing"],ms:3200}
+       ]},
+      {id:'h5',title:'Last Christmas',artist:'Taylor Swift',emoji:'🌨️',
+       dur:'4mins 27sec',durSec:267,artGrad:'linear-gradient(135deg,#6a1a6a,#3a0a3a)',
+       desc:"Taylor Swift's iconic cover became a holiday staple. A heartfelt reimagining of the Wham! classic.",
+       lyrics:[
+         {line:"Last Christmas, I gave you my heart",words:["Last","Christmas,","I","gave","you","my","heart"],ms:4500},
+         {line:"But the very next day, you gave it away",words:["But","the","very","next","day,","you","gave","it","away"],ms:5000},
+         {line:"This year, to save me from tears",words:["This","year,","to","save","me","from","tears"],ms:4000},
+         {line:"I'll give it to someone special",words:["I'll","give","it","to","someone","special"],ms:4000},
+         {line:"Once bitten and twice shy",words:["Once","bitten","and","twice","shy"],ms:3500},
+         {line:"I keep my distance but you still catch my eye",words:["I","keep","my","distance","but","you","still","catch","my","eye"],ms:5000}
+       ]},
+      {id:'h6',title:'Merry Christmas Happy Holidays',artist:'*NSYNC',emoji:'⭐',
+       dur:'3mins 32sec',durSec:212,artGrad:'linear-gradient(135deg,#1a3a6c,#0d2040)',
+       desc:"This festive pop hit by *NSYNC has been a holiday staple since 1998.",
+       lyrics:[
+         {line:"It's the most beautiful time of the year",words:["It's","the","most","beautiful","time","of","the","year"],ms:4500},
+         {line:"Lights fill the trees and it's hard to believe",words:["Lights","fill","the","trees","and","it's","hard","to","believe"],ms:5000},
+         {line:"Tomorrow is Christmas",words:["Tomorrow","is","Christmas"],ms:2800},
+         {line:"Merry Christmas, happy holidays",words:["Merry","Christmas,","happy","holidays"],ms:4000},
+         {line:"Merry Christmas, happy holidays",words:["Merry","Christmas,","happy","holidays"],ms:4000}
+       ]}
     ]
   },
   {
     id:'love', name:'Love Songs', emoji:'❤️',
     kgradient:'linear-gradient(-45deg,#2a0a1a,#5c1a3a,#3d0f2a,#4a1230)',
-    photoGrad:'linear-gradient(135deg,#c2185b 0%,#7b0a34 50%,#a01040 100%)',
+    photoBg:'linear-gradient(135deg,#c2185b 0%,#7b0a34 50%,#a01040 100%)',
     particles:['❤️','💕','🌹','💫','✨','💖','🌸'],
     songs:[
-      { id:'l1', title:"Can't Help Falling in Love", artist:'Elvis Presley', emoji:'👑',
-        dur:'3mins 2sec', durSec:182, artGrad:'linear-gradient(135deg,#7d3c98,#4a235a)',
-        desc:"Elvis Presley recorded this timeless romantic ballad in 1961. It remains one of the most-covered love songs ever written.",
-        lyrics:[
-          {line:"Wise men say only fools rush in",words:["Wise","men","say","only","fools","rush","in"],ms:4800},
-          {line:"But I can't help falling in love with you",words:["But","I","can't","help","falling","in","love","with","you"],ms:5200},
-          {line:"Shall I stay?",words:["Shall","I","stay?"],ms:3000},
-          {line:"Would it be a sin?",words:["Would","it","be","a","sin?"],ms:3000},
-          {line:"If I can't help falling in love with you",words:["If","I","can't","help","falling","in","love","with","you"],ms:5200},
-          {line:"Like a river flows surely to the sea",words:["Like","a","river","flows","surely","to","the","sea"],ms:5200},
-          {line:"Darling so it goes",words:["Darling","so","it","goes"],ms:3400},
-          {line:"Some things are meant to be",words:["Some","things","are","meant","to","be"],ms:3800},
-          {line:"Take my hand, take my whole life too",words:["Take","my","hand,","take","my","whole","life","too"],ms:5000},
-          {line:"For I can't help falling in love with you",words:["For","I","can't","help","falling","in","love","with","you"],ms:5500}
-        ]
-      },
-      { id:'l2', title:'At Last', artist:'Etta James', emoji:'🌹',
-        dur:'3mins 1sec', durSec:181, artGrad:'linear-gradient(135deg,#922b21,#5b0f0b)',
-        desc:'Etta James first recorded this jazz-pop classic in 1960. Her powerful voice made this one of the greatest love songs of all time.',
-        lyrics:[
-          {line:"At last, my love has come along",words:["At","last,","my","love","has","come","along"],ms:5200},
-          {line:"My lonely days are over",words:["My","lonely","days","are","over"],ms:4200},
-          {line:"And life is like a song",words:["And","life","is","like","a","song"],ms:4200},
-          {line:"At last, the skies above are blue",words:["At","last,","the","skies","above","are","blue"],ms:5200},
-          {line:"My heart was wrapped up in clover",words:["My","heart","was","wrapped","up","in","clover"],ms:4500},
-          {line:"The night I looked at you",words:["The","night","I","looked","at","you"],ms:4000},
-          {line:"I found a dream that I could speak to",words:["I","found","a","dream","that","I","could","speak","to"],ms:5200},
-          {line:"A thrill that I have never known",words:["A","thrill","that","I","have","never","known"],ms:4500}
-        ]
-      },
-      { id:'l3', title:'Make You Feel My Love', artist:'Adele', emoji:'💙',
-        dur:'3mins 33sec', durSec:213, artGrad:'linear-gradient(135deg,#1a2a5e,#0d1440)',
-        desc:"Originally written by Bob Dylan, Adele's 2008 version became an instant classic with her breathtaking vocal performance.",
-        lyrics:[
-          {line:"When the rain is blowing in your face",words:["When","the","rain","is","blowing","in","your","face"],ms:5200},
-          {line:"And the whole world is on your case",words:["And","the","whole","world","is","on","your","case"],ms:4800},
-          {line:"I could offer you a warm embrace",words:["I","could","offer","you","a","warm","embrace"],ms:4800},
-          {line:"To make you feel my love",words:["To","make","you","feel","my","love"],ms:4000},
-          {line:"When the evening shadows and the stars appear",words:["When","the","evening","shadows","and","the","stars","appear"],ms:5500},
-          {line:"I could hold you for a million years",words:["I","could","hold","you","for","a","million","years"],ms:5200},
-          {line:"To make you feel my love",words:["To","make","you","feel","my","love"],ms:4000}
-        ]
-      },
-      { id:'l4', title:'Endless Love', artist:'Diana Ross', emoji:'💞',
-        dur:'4mins 28sec', durSec:268, artGrad:'linear-gradient(135deg,#a93226,#641e16)',
-        desc:"The title track from the 1981 film, this duet between Diana Ross and Lionel Richie reached #1 and became one of the best-selling singles ever.",
-        lyrics:[
-          {line:"My love, there's only you in my life",words:["My","love,","there's","only","you","in","my","life"],ms:5200},
-          {line:"The only thing that's right",words:["The","only","thing","that's","right"],ms:4200},
-          {line:"My first love, you're every breath that I take",words:["My","first","love,","you're","every","breath","that","I","take"],ms:5800},
-          {line:"You're every step I make",words:["You're","every","step","I","make"],ms:4200},
-          {line:"No one else will do",words:["No","one","else","will","do"],ms:3600},
-          {line:"Oh yes, you will always be my endless love",words:["Oh","yes,","you","will","always","be","my","endless","love"],ms:5800}
-        ]
-      }
+      {id:'l1',title:"Can't Help Falling in Love",artist:'Elvis Presley',emoji:'👑',
+       dur:'3mins 2sec',durSec:182,artGrad:'linear-gradient(135deg,#7d3c98,#4a235a)',
+       desc:"Elvis Presley recorded this timeless romantic ballad in 1961. It remains one of the most-covered love songs ever written.",
+       lyrics:[
+         {line:"Wise men say only fools rush in",words:["Wise","men","say","only","fools","rush","in"],ms:4800},
+         {line:"But I can't help falling in love with you",words:["But","I","can't","help","falling","in","love","with","you"],ms:5200},
+         {line:"Shall I stay? Would it be a sin?",words:["Shall","I","stay?","Would","it","be","a","sin?"],ms:5000},
+         {line:"If I can't help falling in love with you",words:["If","I","can't","help","falling","in","love","with","you"],ms:5200},
+         {line:"Like a river flows surely to the sea",words:["Like","a","river","flows","surely","to","the","sea"],ms:5200},
+         {line:"Some things are meant to be",words:["Some","things","are","meant","to","be"],ms:3800},
+         {line:"Take my hand, take my whole life too",words:["Take","my","hand,","take","my","whole","life","too"],ms:5000},
+         {line:"For I can't help falling in love with you",words:["For","I","can't","help","falling","in","love","with","you"],ms:5500}
+       ]},
+      {id:'l2',title:'At Last',artist:'Etta James',emoji:'🌹',
+       dur:'3mins 1sec',durSec:181,artGrad:'linear-gradient(135deg,#922b21,#5b0f0b)',
+       desc:'Etta James first recorded this jazz-pop classic in 1960. Her powerful voice made it one of the greatest love songs of all time.',
+       lyrics:[
+         {line:"At last, my love has come along",words:["At","last,","my","love","has","come","along"],ms:5200},
+         {line:"My lonely days are over",words:["My","lonely","days","are","over"],ms:4200},
+         {line:"And life is like a song",words:["And","life","is","like","a","song"],ms:4200},
+         {line:"At last, the skies above are blue",words:["At","last,","the","skies","above","are","blue"],ms:5200},
+         {line:"My heart was wrapped up in clover",words:["My","heart","was","wrapped","up","in","clover"],ms:4500},
+         {line:"I found a thrill that I have never known",words:["I","found","a","thrill","that","I","have","never","known"],ms:5200}
+       ]},
+      {id:'l3',title:'Make You Feel My Love',artist:'Adele',emoji:'💙',
+       dur:'3mins 33sec',durSec:213,artGrad:'linear-gradient(135deg,#1a2a5e,#0d1440)',
+       desc:"Originally written by Bob Dylan, Adele's 2008 version became an instant classic with her breathtaking performance.",
+       lyrics:[
+         {line:"When the rain is blowing in your face",words:["When","the","rain","is","blowing","in","your","face"],ms:5200},
+         {line:"And the whole world is on your case",words:["And","the","whole","world","is","on","your","case"],ms:4800},
+         {line:"I could offer you a warm embrace",words:["I","could","offer","you","a","warm","embrace"],ms:4800},
+         {line:"To make you feel my love",words:["To","make","you","feel","my","love"],ms:4000},
+         {line:"I could hold you for a million years",words:["I","could","hold","you","for","a","million","years"],ms:5200},
+         {line:"To make you feel my love",words:["To","make","you","feel","my","love"],ms:4000}
+       ]},
+      {id:'l4',title:'Endless Love',artist:'Diana Ross',emoji:'💞',
+       dur:'4mins 28sec',durSec:268,artGrad:'linear-gradient(135deg,#a93226,#641e16)',
+       desc:"The 1981 title track, a duet between Diana Ross and Lionel Richie, reached #1 and became one of the best-selling singles ever.",
+       lyrics:[
+         {line:"My love, there's only you in my life",words:["My","love,","there's","only","you","in","my","life"],ms:5200},
+         {line:"The only thing that's right",words:["The","only","thing","that's","right"],ms:4200},
+         {line:"My first love, you're every breath that I take",words:["My","first","love,","you're","every","breath","that","I","take"],ms:5800},
+         {line:"No one else will do",words:["No","one","else","will","do"],ms:3600},
+         {line:"Oh yes, you will always be my endless love",words:["Oh","yes,","you","will","always","be","my","endless","love"],ms:5800}
+       ]}
     ]
   },
   {
     id:'summer', name:'Summer Jams', emoji:'☀️',
     kgradient:'linear-gradient(-45deg,#1a1000,#3d2a00,#2a1800,#4a3600)',
-    photoGrad:'linear-gradient(135deg,#e67e22 0%,#8a4000 50%,#c05a00 100%)',
+    photoBg:'linear-gradient(135deg,#e67e22 0%,#8a4000 50%,#c05a00 100%)',
     particles:['☀️','🌊','🌴','🎉','🌺','🍋','🎵'],
     songs:[
-      { id:'s1', title:'Good as Hell', artist:'Lizzo', emoji:'💛',
-        dur:'2mins 41sec', durSec:161, artGrad:'linear-gradient(135deg,#d4a017,#7d5e00)',
-        desc:"Lizzo's empowering anthem about self-love and confidence became a global phenomenon. The perfect feel-good summer bop.",
-        lyrics:[
-          {line:"I do my hair toss, check my nails",words:["I","do","my","hair","toss,","check","my","nails"],ms:3600},
-          {line:"Baby how you feelin'?",words:["Baby","how","you","feelin'?"],ms:3000},
-          {line:"Feeling good as hell",words:["Feeling","good","as","hell"],ms:3000},
-          {line:"Hair toss, check my nails",words:["Hair","toss,","check","my","nails"],ms:3000},
-          {line:"Baby how you feelin'?",words:["Baby","how","you","feelin'?"],ms:3000},
-          {line:"Feeling good as hell",words:["Feeling","good","as","hell"],ms:3000},
-          {line:"Woo, girl, need to kick off your shoes",words:["Woo,","girl,","need","to","kick","off","your","shoes"],ms:4200},
-          {line:"Time to focus on you",words:["Time","to","focus","on","you"],ms:3000}
-        ]
-      },
-      { id:'s2', title:'Walking on Sunshine', artist:'Katrina & The Waves', emoji:'🌤️',
-        dur:'3mins 59sec', durSec:239, artGrad:'linear-gradient(135deg,#e67e22,#a04000)',
-        desc:"Released in 1985, this energetic pop anthem is the definitive feel-good summer song. Katrina Leskanich's vocals are pure sunshine.",
-        lyrics:[
-          {line:"I used to think maybe you loved me",words:["I","used","to","think","maybe","you","loved","me"],ms:4200},
-          {line:"Now baby I'm sure",words:["Now","baby","I'm","sure"],ms:3000},
-          {line:"And I just can't wait till the day",words:["And","I","just","can't","wait","till","the","day"],ms:4000},
-          {line:"When you knock on my door",words:["When","you","knock","on","my","door"],ms:3600},
-          {line:"I'm walking on sunshine, woah!",words:["I'm","walking","on","sunshine,","woah!"],ms:4000},
-          {line:"I'm walking on sunshine, woah!",words:["I'm","walking","on","sunshine,","woah!"],ms:4000},
-          {line:"And don't it feel good!",words:["And","don't","it","feel","good!"],ms:3000}
-        ]
-      },
-      { id:'s3', title:'Summer Nights', artist:'Grease Cast', emoji:'🎸',
-        dur:'3mins 32sec', durSec:212, artGrad:'linear-gradient(135deg,#2874a6,#1a4f7a)',
-        desc:"From the iconic 1978 musical film Grease, this duet captures the magic of a summer romance perfectly.",
-        lyrics:[
-          {line:"Summer lovin', had me a blast",words:["Summer","lovin',","had","me","a","blast"],ms:4000},
-          {line:"Summer lovin', happened so fast",words:["Summer","lovin',","happened","so","fast"],ms:4000},
-          {line:"I met a girl crazy for me",words:["I","met","a","girl","crazy","for","me"],ms:3800},
-          {line:"Met a boy cute as can be",words:["Met","a","boy","cute","as","can","be"],ms:3800},
-          {line:"Summer days drifting away",words:["Summer","days","drifting","away"],ms:3600},
-          {line:"To oh oh those summer nights",words:["To","oh","oh","those","summer","nights"],ms:4000},
-          {line:"Tell me more, tell me more",words:["Tell","me","more,","tell","me","more"],ms:3400}
-        ]
-      },
-      { id:'s4', title:'Cruel Summer', artist:'Taylor Swift', emoji:'🌙',
-        dur:'2mins 58sec', durSec:178, artGrad:'linear-gradient(135deg,#c0392b,#7b241c)',
-        desc:"From the Lover album (2019), this synth-pop banger is Taylor Swift at her most euphoric. It became her first solo #1 hit in 2023.",
-        lyrics:[
-          {line:"Fever dream high in the quiet of the night",words:["Fever","dream","high","in","the","quiet","of","the","night"],ms:5200},
-          {line:"You know that I caught it",words:["You","know","that","I","caught","it"],ms:3600},
-          {line:"Bad, bad boy, shiny toy with a price",words:["Bad,","bad","boy,","shiny","toy","with","a","price"],ms:4800},
-          {line:"Killing me slow out the window I'm looking",words:["Killing","me","slow","out","the","window","I'm","looking"],ms:5200},
-          {line:"It's a cruel summer",words:["It's","a","cruel","summer"],ms:3400},
-          {line:"With you",words:["With","you"],ms:2800}
-        ]
-      }
+      {id:'s1',title:'Good as Hell',artist:'Lizzo',emoji:'💛',
+       dur:'2mins 41sec',durSec:161,artGrad:'linear-gradient(135deg,#d4a017,#7d5e00)',
+       desc:"Lizzo's empowering anthem about self-love became a global phenomenon. The perfect feel-good summer bop.",
+       lyrics:[
+         {line:"I do my hair toss, check my nails",words:["I","do","my","hair","toss,","check","my","nails"],ms:3600},
+         {line:"Baby how you feelin'?",words:["Baby","how","you","feelin'?"],ms:3000},
+         {line:"Feeling good as hell",words:["Feeling","good","as","hell"],ms:3000},
+         {line:"Woo, girl, need to kick off your shoes",words:["Woo,","girl,","need","to","kick","off","your","shoes"],ms:4200},
+         {line:"Time to focus on you",words:["Time","to","focus","on","you"],ms:3000},
+         {line:"Feeling good as hell",words:["Feeling","good","as","hell"],ms:3000}
+       ]},
+      {id:'s2',title:'Walking on Sunshine',artist:'Katrina & The Waves',emoji:'🌤️',
+       dur:'3mins 59sec',durSec:239,artGrad:'linear-gradient(135deg,#e67e22,#a04000)',
+       desc:"Released in 1985, this energetic pop anthem is the definitive feel-good summer song of all time.",
+       lyrics:[
+         {line:"I used to think maybe you loved me",words:["I","used","to","think","maybe","you","loved","me"],ms:4200},
+         {line:"Now baby I'm sure",words:["Now","baby","I'm","sure"],ms:3000},
+         {line:"And I just can't wait till the day",words:["And","I","just","can't","wait","till","the","day"],ms:4000},
+         {line:"When you knock on my door",words:["When","you","knock","on","my","door"],ms:3600},
+         {line:"I'm walking on sunshine, woah!",words:["I'm","walking","on","sunshine,","woah!"],ms:4000},
+         {line:"And don't it feel good!",words:["And","don't","it","feel","good!"],ms:3000}
+       ]},
+      {id:'s3',title:'Summer Nights',artist:'Grease Cast',emoji:'🎸',
+       dur:'3mins 32sec',durSec:212,artGrad:'linear-gradient(135deg,#2874a6,#1a4f7a)',
+       desc:"From the iconic 1978 musical film Grease, this duet perfectly captures the magic of a summer romance.",
+       lyrics:[
+         {line:"Summer lovin', had me a blast",words:["Summer","lovin',","had","me","a","blast"],ms:4000},
+         {line:"Summer lovin', happened so fast",words:["Summer","lovin',","happened","so","fast"],ms:4000},
+         {line:"I met a girl crazy for me",words:["I","met","a","girl","crazy","for","me"],ms:3800},
+         {line:"Summer days drifting away",words:["Summer","days","drifting","away"],ms:3600},
+         {line:"To oh oh those summer nights",words:["To","oh","oh","those","summer","nights"],ms:4000},
+         {line:"Tell me more, tell me more",words:["Tell","me","more,","tell","me","more"],ms:3400}
+       ]},
+      {id:'s4',title:'Cruel Summer',artist:'Taylor Swift',emoji:'🌙',
+       dur:'2mins 58sec',durSec:178,artGrad:'linear-gradient(135deg,#c0392b,#7b241c)',
+       desc:"From the Lover album (2019), this synth-pop banger became Taylor Swift's first solo #1 hit in 2023.",
+       lyrics:[
+         {line:"Fever dream high in the quiet of the night",words:["Fever","dream","high","in","the","quiet","of","the","night"],ms:5200},
+         {line:"You know that I caught it",words:["You","know","that","I","caught","it"],ms:3600},
+         {line:"Bad, bad boy, shiny toy with a price",words:["Bad,","bad","boy,","shiny","toy","with","a","price"],ms:4800},
+         {line:"Killing me slow out the window I'm looking",words:["Killing","me","slow","out","the","window","I'm","looking"],ms:5200},
+         {line:"It's a cruel summer",words:["It's","a","cruel","summer"],ms:3400},
+         {line:"With you",words:["With","you"],ms:2800}
+       ]}
     ]
   }
 ];
 
-/* ═══════════════ STATE ═══════════════ */
-let curSong = null, curGenre = null;
-let previewSong = null, previewGenre = null;
-let ktimers = [], lineIdx = 0, isPlaying = false;
-let elapsed = 0, totalDur = 0, progTimer = null;
+// Trending Tunes poster data
+const TRENDING = [
+  {title:'President Down',artist:'Drama',emoji:'🏛️',bg:'linear-gradient(160deg,#0a1020 0%,#1a2a40 50%,#080d18 100%)',accent:'rgba(60,120,255,.3)'},
+  {title:'Kissing is the Easy Part',artist:'Romance',emoji:'💋',bg:'linear-gradient(160deg,#1a0810 0%,#3a1828 50%,#0f0508 100%)',accent:'rgba(255,60,120,.3)'},
+  {title:'Big Mood',artist:'Comedy',emoji:'😤',bg:'linear-gradient(160deg,#1a1000 0%,#3a2800 50%,#100a00 100%)',accent:'rgba(255,160,0,.3)'},
+  {title:'Dead Hot',artist:'Music',emoji:'🎸',bg:'linear-gradient(160deg,#1a0020 0%,#3a0050 50%,#0f0012 100%)',accent:'rgba(200,0,255,.3)'},
+  {title:'The Freak Brothers',artist:'Animation',emoji:'🌿',bg:'linear-gradient(160deg,#001a00 0%,#003a00 50%,#000f00 100%)',accent:'rgba(0,200,60,.3)'},
+  {title:'Cinema Smash',artist:'Films',emoji:'🎬',bg:'linear-gradient(160deg,#1a0800 0%,#3a1200 50%,#0f0500 100%)',accent:'rgba(255,80,0,.3)'},
+  {title:'Night Fever',artist:'Disco Hits',emoji:'🕺',bg:'linear-gradient(160deg,#0a001a 0%,#200040 50%,#060010 100%)',accent:'rgba(160,0,255,.3)'},
+  {title:'Love Stage',artist:'K-Drama',emoji:'🌸',bg:'linear-gradient(160deg,#1a000a 0%,#3a0020 50%,#0f0008 100%)',accent:'rgba(255,100,180,.3)'},
+];
 
-/* ═══════════════ SCREENS ═══════════════ */
-function showScreen(id) {
+/* ═══ STATE ═══ */
+let curSong=null, curGenre=null, prevSong=null, prevGenre=null;
+let ktimers=[], lineIdx=0, isPlaying=false, elapsed=0, totalDur=0, progTimer=null;
+
+/* ═══ SCREENS ═══ */
+function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome() {
-  closePlayer(true);
-  showScreen('home');
-  document.getElementById('music-anim-layer').style.opacity='1';
+function goHome(){
+  closePlayer(true); showScreen('home');
+  document.getElementById('music-bg').classList.remove('hide');
 }
 
-/* ═══════════════ HOME BUILD ═══════════════ */
-function buildSparkles() {
-  const c = document.getElementById('sparkles-container');
+/* ═══ HOME BUILD ═══ */
+function buildLoveHearts(){
+  const c=document.getElementById('lovehearts');
+  const em=['❤️','💕','💖','💗','🌹','✨','💝'];
   for(let i=0;i<12;i++){
-    const s=document.createElement('div'); s.className='sparkle';
-    s.style.cssText=`left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;
-      --sd:${2+Math.random()*3}s;--sdl:${Math.random()*3}s;`;
-    c.appendChild(s);
-  }
-}
-function buildHearts() {
-  const c = document.getElementById('love-hearts');
-  const emojis=['❤️','💕','💖','💗','🌹','✨'];
-  for(let i=0;i<10;i++){
-    const h=document.createElement('div'); h.className='love-heart';
-    h.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    const h=document.createElement('div'); h.className='lhrt';
+    h.textContent=em[Math.floor(Math.random()*em.length)];
     h.style.cssText=`left:${Math.random()*90}%;top:${Math.random()*90}%;
-      --hs:${0.8+Math.random()*1.6}rem;
-      --hd:${4+Math.random()*4}s;--hdl:${Math.random()*4}s;
-      --hr:${-10+Math.random()*20}deg;--hr2:${-10+Math.random()*20}deg;
-      --hy:${-15-Math.random()*20}px;`;
+      --lhfs:${0.8+Math.random()*1.5}rem;--lhop:${0.5+Math.random()*0.3};
+      --lhd:${4+Math.random()*4}s;--lhdl:${Math.random()*4}s;
+      --lhr:${-10+Math.random()*20}deg;--lhr2:${-10+Math.random()*20}deg;
+      --lhy:${-14-Math.random()*18}px;`;
     c.appendChild(h);
   }
 }
 
-/* Album art cards for recommended */
-const ALBUM_CARDS = [
-  { label:'Rebel Heart', sub:'Madonna', bg:'linear-gradient(145deg,#111,#333)', emoji:'🎙️' },
-  { label:'Speak Now', sub:'Taylor Swift', bg:'linear-gradient(145deg,#1a5e3a,#0a8a52)', emoji:'🌿' },
-  { label:'The Blueprint', sub:'Jay-Z', bg:'linear-gradient(145deg,#0a0a0a,#1a1a2e)', emoji:'💎' },
-  { label:'Plastic Hearts', sub:'Miley Cyrus', bg:'linear-gradient(145deg,#7b1fa2,#c2185b)', emoji:'🌙' },
-  { label:'Michael', sub:'Michael Jackson', bg:'linear-gradient(145deg,#7d5a00,#c8971f)', emoji:'👑' },
-  { label:'25', sub:'Adele', bg:'linear-gradient(145deg,#1a1a1a,#3d3d3d)', emoji:'🎤' },
-  { label:"When We All Fall", sub:'Billie Eilish', bg:'linear-gradient(145deg,#001a00,#003a00)', emoji:'🕷️' },
-  { label:'Future Nostalgia', sub:'Dua Lipa', bg:'linear-gradient(145deg,#3a1a00,#8a4000)', emoji:'✨' },
-];
-
-function buildAlbumRow() {
-  const row = document.getElementById('album-row');
-  ALBUM_CARDS.forEach(a => {
-    const card = document.createElement('div');
-    card.className='album-card';
+function buildPosters(){
+  const row=document.getElementById('posters-row');
+  TRENDING.forEach(t=>{
+    const card=document.createElement('div'); card.className='poster-card';
     card.innerHTML=`
-      <div class="ac-bg" style="background:${a.bg}"></div>
-      <div class="ac-emoji">${a.emoji}</div>
-      <div class="ac-overlay"></div>
-      <div class="ac-play"><div class="ac-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
-      <div class="ac-info"><div class="ac-title">${a.label}</div><div class="ac-artist">${a.sub}</div></div>
+      <div class="pc-art" style="background:${t.bg}">
+        <div class="pc-photo">${t.emoji}</div>
+        <div style="position:absolute;inset:0;background:${t.accent};mix-blend-mode:screen;"></div>
+        <div class="pc-overlay"></div>
+      </div>
+      <div class="pc-play"><div class="pc-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="pc-info">
+        <div class="pc-title">${t.title}</div>
+        <div class="pc-sub">${t.artist}</div>
+        <div class="tubi-tag"><div class="tubi-tag-dot"></div>tubi original</div>
+      </div>
     `;
-    // Pick a random genre song to play
-    const gIdx=Math.floor(Math.random()*GENRES.length);
-    const g=GENRES[gIdx], s=g.songs[Math.floor(Math.random()*g.songs.length)];
+    // Wire to random song
+    const g=GENRES[Math.floor(Math.random()*GENRES.length)];
+    const s=g.songs[Math.floor(Math.random()*g.songs.length)];
     card.onclick=()=>openPlayer(s,g);
     row.appendChild(card);
   });
 }
 
-/* ═══════════════ BROWSER ═══════════════ */
-function showBrowser(genreId) {
-  const genre = GENRES.find(g=>g.id===genreId);
+/* ═══ BROWSER ═══ */
+function showBrowser(genreId){
+  const genre=GENRES.find(g=>g.id===genreId);
   document.getElementById('bbar-genre').textContent=`${genre.emoji} ${genre.name}`;
-  buildEpg(genre);
-  selectSong(genre.songs[0], genre);
+  buildEpgFlat(genre);
+  selectSong(genre.songs[0],genre);
   updateClock();
-  document.getElementById('music-anim-layer').style.opacity='0';
+  document.getElementById('music-bg').classList.add('hide');
   showScreen('browser');
 }
 
-function updateClock() {
-  const n=new Date(), h=n.getHours(), m=n.getMinutes(), ap=h>=12?'PM':'AM';
-  document.getElementById('preview-clock').textContent=`${h%12||12}:${m.toString().padStart(2,'0')} ${ap}`;
+function updateClock(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h>=12?'PM':'AM';
+  document.getElementById('browser-clock').textContent=`${h%12||12}:${m.toString().padStart(2,'0')} ${ap}`;
 }
 
-function buildEpg(genre) {
-  const list = document.getElementById('epg-list');
+/* FLAT EPG — no genre headers, just song rows */
+function buildEpgFlat(genre){
+  const list=document.getElementById('epg-list');
   list.innerHTML='';
-  const hdr=document.createElement('div'); hdr.className='epg-genre-hdr';
-  hdr.textContent=`${genre.emoji} ${genre.name}`;
-  list.appendChild(hdr);
 
-  genre.songs.forEach((song,i)=>{
+  // All songs across all genres, with selected genre first
+  let allSongs=[];
+  genre.songs.forEach(s=>allSongs.push({s,g:genre}));
+  GENRES.filter(g=>g.id!==genre.id).forEach(g=>g.songs.forEach(s=>allSongs.push({s,g})));
+
+  allSongs.forEach(({s,g},i)=>{
     const row=document.createElement('div');
-    row.className='epg-row'+(i===0?' sel':'');
-    row.id=`epg-${song.id}`;
+    // Default: first is selected, one above is "above" style, last few fade
+    const isLast = i === allSongs.length-1;
+    row.className='epg-row'+(i===0?' sel': i===allSongs.length-1?' fading':'');
+    row.id=`er-${s.id}`;
     row.innerHTML=`
-      <div class="epg-left">
-        <div class="epg-artist">${song.artist}</div>
-        <div class="epg-title">${song.title}</div>
+      <div>
+        <div class="epg-artist">${s.artist}</div>
+        <div class="epg-title">${s.title}</div>
       </div>
       <div class="epg-right">
-        <span class="epg-dur">${song.dur}</span>
-        <div class="epg-arrow"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <span class="epg-dur">${s.dur}</span>
+        <div class="epg-arr"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
       </div>
     `;
-    row.onclick=()=>selectSong(song,genre);
-    row.ondblclick=()=>openPlayer(song,genre);
+    row.onclick=()=>selectSong(s,g);
+    row.ondblclick=()=>openPlayer(s,g);
     list.appendChild(row);
   });
 }
 
-function selectSong(song, genre) {
-  previewSong=song; previewGenre=genre;
-  document.querySelectorAll('.epg-row').forEach(r=>r.classList.remove('sel'));
-  const el=document.getElementById(`epg-${song.id}`);
-  if(el) el.classList.add('sel');
+function selectSong(song,genre){
+  prevSong=song; prevGenre=genre;
+  document.querySelectorAll('.epg-row').forEach((r,i)=>{
+    r.classList.remove('sel','above','fading');
+    // Mark rows appropriately relative to selected
+    if(r.id===`er-${song.id}`) r.classList.add('sel');
+  });
+  // Dim rows above selected
+  const rows=[...document.querySelectorAll('.epg-row')];
+  const selIdx=rows.findIndex(r=>r.id===`er-${song.id}`);
+  rows.forEach((r,i)=>{ if(i<selIdx) r.classList.add('above'); });
+  if(rows[rows.length-1]) rows[rows.length-1].classList.add('fading');
 
+  // Update preview
   document.getElementById('preview-title').textContent=song.title;
   document.getElementById('preview-artist').textContent=song.artist;
   document.getElementById('preview-dur').textContent=song.dur;
   document.getElementById('preview-desc').textContent=song.desc||'';
-  document.getElementById('preview-album-art').textContent=song.emoji;
-  document.getElementById('preview-album-art').style.background=song.artGrad;
-  document.getElementById('preview-artist-emoji').textContent=song.emoji;
-  document.getElementById('preview-photo-right').style.background=genre.photoGrad;
+  const thumb=document.getElementById('preview-thumb');
+  thumb.textContent=song.emoji; thumb.style.background=song.artGrad;
+  document.getElementById('preview-photo-emoji').textContent=song.emoji;
+  document.getElementById('preview-photo-bg').style.background=genre.photoBg;
 }
 
-function playCurrent() { if(previewSong) openPlayer(previewSong,previewGenre); }
+function playCurrent(){ if(prevSong) openPlayer(prevSong,prevGenre); }
 
-/* ═══════════════ PLAYER ═══════════════ */
-function openPlayer(song, genre) {
+/* ═══ PLAYER ═══ */
+function openPlayer(song,genre){
   curSong=song; curGenre=genre;
   totalDur=song.durSec; elapsed=0; lineIdx=0; isPlaying=false;
   document.getElementById('kp-bg').style.background=genre.kgradient;
@@ -1202,27 +1139,27 @@ function openPlayer(song, genre) {
   document.getElementById('lyr-curr').innerHTML='';
   document.getElementById('lyr-next').textContent='';
   document.getElementById('kp-wait').classList.remove('gone');
-  spawnParticles(genre.particles);
+  spawnPtcl(genre.particles);
   clearAllTimers();
-  document.getElementById('music-anim-layer').style.opacity='0';
+  document.getElementById('music-bg').classList.add('hide');
   showScreen('player');
 }
 
-function closePlayer(goingHome) {
-  clearAllTimers(); clearParticles();
-  if(!goingHome) {
-    if(previewSong) showScreen('browser');
+function closePlayer(goHome_){
+  clearAllTimers(); clearPtcl();
+  if(!goHome_){
+    if(prevSong) showScreen('browser');
     else showScreen('home');
+    document.getElementById('music-bg').classList.remove('hide');
   }
-  document.getElementById('music-anim-layer').style.opacity='1';
 }
 
-function startKaraoke() {
+function startKaraoke(){
   document.getElementById('kp-wait').classList.add('gone');
   isPlaying=true; elapsed=0; lineIdx=0;
   clearAllTimers(); renderLine(); startProg();
 }
-function restartSong() {
+function restartSong(){
   clearAllTimers(); elapsed=0; lineIdx=0; isPlaying=true;
   document.getElementById('prog-fill').style.width='0%';
   document.getElementById('kp-time').textContent=`0:00 / ${fmt(totalDur)}`;
@@ -1231,12 +1168,12 @@ function restartSong() {
   renderLine(); startProg();
 }
 
-/* ─── LYRICS ─── */
-function renderLine() {
+/* LYRICS */
+function renderLine(){
   if(!curSong) return;
   const L=curSong.lyrics;
-  if(lineIdx>=L.length) {
-    document.getElementById('lyr-prev').textContent='🎉 Incredible!';
+  if(lineIdx>=L.length){
+    document.getElementById('lyr-prev').textContent='🎉 Amazing!';
     document.getElementById('lyr-curr').innerHTML='';
     document.getElementById('lyr-next').textContent='';
     return;
@@ -1244,31 +1181,30 @@ function renderLine() {
   document.getElementById('lyr-prev').textContent=lineIdx>0?L[lineIdx-1].line:'';
   document.getElementById('lyr-next').textContent=lineIdx<L.length-1?L[lineIdx+1].line:'';
   const c=L[lineIdx];
-  document.getElementById('lyr-curr').innerHTML=c.words.map((w,i)=>
-    `<span class="lw" id="lw${i}">${w}</span>`).join(' ');
+  document.getElementById('lyr-curr').innerHTML=c.words.map((w,i)=>`<span class="lw" id="lw${i}">${w}</span>`).join(' ');
   animWords(c);
   const t=setTimeout(()=>{lineIdx++;renderLine();},c.ms);
   ktimers.push(t);
 }
-function animWords(ld) {
+function animWords(ld){
   const mpw=ld.ms/ld.words.length;
   ld.words.forEach((_,i)=>{
     const t=setTimeout(()=>{
       if(!isPlaying)return;
       if(i>0){const p=document.getElementById(`lw${i-1}`);if(p){p.classList.remove('active');p.classList.add('sung');}}
       const c=document.getElementById(`lw${i}`);if(c)c.classList.add('active');
-      if(i===ld.words.length-1){const lt=setTimeout(()=>{if(c){c.classList.remove('active');c.classList.add('sung');}},mpw*0.75);ktimers.push(lt);}
+      if(i===ld.words.length-1){const lt=setTimeout(()=>{if(c){c.classList.remove('active');c.classList.add('sung');}},mpw*.75);ktimers.push(lt);}
     },i*mpw);
     ktimers.push(t);
   });
 }
 
-/* ─── PROGRESS ─── */
-function startProg() {
+/* PROGRESS */
+function startProg(){
   clearInterval(progTimer);
   progTimer=setInterval(()=>{
     if(!isPlaying)return;
-    elapsed=Math.min(elapsed+0.5,totalDur);
+    elapsed=Math.min(elapsed+.5,totalDur);
     document.getElementById('prog-fill').style.width=(elapsed/totalDur*100)+'%';
     document.getElementById('kp-time').textContent=`${fmt(elapsed)} / ${fmt(totalDur)}`;
     if(elapsed>=totalDur)clearInterval(progTimer);
@@ -1292,38 +1228,37 @@ function toggleMute(){
   b.style.color=b.style.color==='var(--yellow)'?'':'var(--yellow)';
 }
 
-/* ─── PARTICLES ─── */
-function spawnParticles(emojis) {
-  clearParticles();
-  const c=document.getElementById('kp-particles');
+/* PARTICLES */
+function spawnPtcl(emojis){
+  clearPtcl();
+  const c=document.getElementById('kp-ptcl');
   for(let i=0;i<14;i++){
     const p=document.createElement('div'); p.className='kpp';
     p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-    p.style.cssText=`left:${Math.random()*95}%;bottom:0;--d:${5+Math.random()*7}s;--dl:${Math.random()*9}s;--fs:${0.9+Math.random()*1.3}rem;`;
+    p.style.cssText=`left:${Math.random()*95}%;bottom:0;--d:${5+Math.random()*7}s;--dl:${Math.random()*9}s;--fs:${.9+Math.random()*1.3}rem;`;
     c.appendChild(p);
   }
 }
-function clearParticles(){document.getElementById('kp-particles').innerHTML='';}
+function clearPtcl(){document.getElementById('kp-ptcl').innerHTML='';}
 function clearAllTimers(){ktimers.forEach(clearTimeout);ktimers=[];clearInterval(progTimer);}
 
-/* ─── STARS ─── */
+/* STARS */
 function buildStars(){
-  const c=document.getElementById('stars-layer');
+  const c=document.getElementById('stars');
   c.style.cssText='position:fixed;inset:0;z-index:1;pointer-events:none;';
-  for(let i=0;i<100;i++){
+  for(let i=0;i<80;i++){
     const s=document.createElement('div'); s.className='star';
-    const sz=Math.random()*2.2+0.4;
+    const sz=Math.random()*1.8+.3;
     s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
-      --d:${2+Math.random()*4}s;--dl:${Math.random()*5}s;--lo:${0.1+Math.random()*0.15};--hi:${0.4+Math.random()*0.5};`;
+      --d:${2+Math.random()*4}s;--dl:${Math.random()*5}s;--lo:${.08+Math.random()*0.1};--hi:${.3+Math.random()*0.4};`;
     c.appendChild(s);
   }
 }
 
-/* ─── INIT ─── */
+/* INIT */
 buildStars();
-buildSparkles();
-buildHearts();
-buildAlbumRow();
+buildLoveHearts();
+buildPosters();
 setInterval(updateClock,10000);
 updateClock();
 </script>
